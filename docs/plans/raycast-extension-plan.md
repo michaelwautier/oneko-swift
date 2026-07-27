@@ -36,7 +36,7 @@ Go with **option 1**.
 
 ## Phase 2 — Extension scaffold
 
-- [ ] `npm init raycast-extension` (React + TypeScript, `@raycast/api`). Keep it in a separate repo (`oneko-raycast`) or a top-level `raycast/` folder here — separate repo preferred if publishing to the store (store PRs vendor the extension into `raycast/extensions`).
+- [ ] `npm init raycast-extension` (React + TypeScript, `@raycast/api`). Keep it in a separate repo under the neutral org (`oneko-app/oneko-raycast`, after the Homebrew plan's Phase 0 creates the org) or a top-level `raycast/` folder here — separate repo preferred if publishing to the store (store PRs vendor the extension into `raycast/extensions`).
 - [ ] Extension metadata: name `oneko`, icon 512×512 (reuse a sprite frame from `docs/previews`, upscaled nearest-neighbor).
 
 ## Phase 3 — Commands
@@ -49,13 +49,14 @@ All "fire URL" commands are `mode: "no-view"` running `open -g` via `child_proce
 - [ ] **Set Speed** (list: Slow/Normal/Fast) → `oneko://speed/...`
 - [ ] **Choose Sprite** (list view, grouped by the same groups as `SpriteVariant.groups`, one row per variant with its preview image bundled into the extension's assets) → `oneko://variant/...`
 - [ ] **Quit Oneko** (no-view) → `oneko://quit`
-- [ ] Nice-to-have: read current settings for checkmarks in lists via `defaults read com.michael.oneko` (read-only is safe — writes stay URL-only).
-- [ ] Error handling: if `open` fails because the app isn't installed, show a toast linking to install instructions (brew command from the Homebrew plan).
+- [ ] Nice-to-have: read current settings for checkmarks in lists via `defaults read com.michael.oneko` (or `app.oneko.Oneko` if the Homebrew plan's Phase 0 renames the bundle ID — keep in sync; read-only is safe, writes stay URL-only).
+- [ ] Error handling: if `open` fails because the app isn't installed, show a toast linking to install instructions (`brew install --cask oneko-app/tap/oneko`).
 
 ## Phase 4 — Ship
 
 - [ ] Use locally via `npm run dev` / `npm run build` (works forever without publishing).
 - [ ] Optional: publish to the Raycast Store — PR to `raycast/extensions`, needs screenshots, README, icon, and passing `npm run lint` / store review guidelines.
+- [ ] Anonymity caveat: the store lists the author's Raycast/GitHub handle, and the store PR comes from a personal account — the neutral org does not hide you here. If staying pseudonymous matters more than store presence, stop at local install, or publish from a fresh pseudonymous GitHub + Raycast account.
 
 ## Acceptance criteria
 

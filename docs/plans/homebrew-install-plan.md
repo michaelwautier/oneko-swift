@@ -4,13 +4,13 @@
 
 ## Goal
 
-`brew install --cask michaelwautier/tap/oneko` puts a working `Oneko.app` in `/Applications`.
+`brew install --cask oneko-app/tap/oneko` puts a working `Oneko.app` in `/Applications`, with no personal name in any user-facing string (neutral-org path; `oneko-app` is the working org name — checked free on GitHub as of 2026-07-28, along with `oneko-mac`, `oneko-project`, `onekoapp`).
 
 ## Current state
 
 - App builds with `./build.sh`: `swiftc -O Sources/*.swift` → `build/Oneko.app`, ad-hoc signed (needed for SMAppService launch-at-login).
 - No SwiftPM package, no versioned releases, no CI. `Info.plist` has `CFBundleVersion` / `CFBundleShortVersionString` hardcoded to `1.0`.
-- Repo is public (`michaelwautier/oneko-swift`) but has 0 stars, so the official `homebrew/cask` repo is out for now (notability requirements). A personal tap is the way.
+- Repo is public (`michaelwautier/oneko-swift`) but has 0 stars, so the official `homebrew/cask` repo is out for now (notability requirements). A tap under a neutral GitHub org is the way.
 
 ## Key decision: Gatekeeper
 
@@ -21,6 +21,14 @@ Homebrew casks quarantine downloaded apps by default. An ad-hoc-signed, un-notar
 3. **Formula instead of cask (build from source).** `brew install` compiles locally with `swiftc`; locally-built binaries get no quarantine flag, and the local ad-hoc signature keeps SMAppService working. Downside: users need Xcode CLT, and installing a `.app` from a formula is unconventional (caveats must tell the user to link it into `/Applications`).
 
 Default choice for this plan: **option 2** to start (zero cost, one-line caveat), with option 1 as a follow-up if the app gets traction. Reassess before starting.
+
+## Phase 0 — Neutral org (do first)
+
+- [ ] Create the GitHub org (web UI only — can't be scripted): `oneko-app` (free as of 2026-07-28).
+- [ ] Before pushing anything to the org, set a pseudonymous commit identity so new commits don't carry the personal name/email: `git config user.name` + GitHub noreply email, and enable "Keep my email addresses private" + "Block command line pushes that expose my email" on GitHub. Existing history keeps "Michaël W." unless rewritten — accepted, not worth a rewrite.
+- [ ] Transfer `michaelwautier/oneko-swift` → `oneko-app/oneko-swift` (repo Settings → Transfer). GitHub redirects the old URL; still update the local remote: `git remote set-url origin git@github.com:oneko-app/oneko-swift.git`.
+- [ ] Update README links/badges that mention the old owner.
+- [ ] Optional but on-theme: change `CFBundleIdentifier` from `com.michael.oneko` to `app.oneko.Oneko`. Do it now if at all — it resets existing prefs and launch-at-login registration (only this machine affected today), and the cask `zap` path plus the Raycast plan's `defaults read` must match.
 
 ## Phase 1 — Make the build releasable
 
@@ -37,24 +45,24 @@ Default choice for this plan: **option 2** to start (zero cost, one-line caveat)
 
 ## Phase 3 — Tap + cask
 
-- [ ] Create repo `michaelwautier/homebrew-tap` with `Casks/oneko.rb`:
+- [ ] Create repo `oneko-app/homebrew-tap` with `Casks/oneko.rb`:
 
 ```ruby
 cask "oneko" do
   version "1.1.0"
   sha256 "<sha256-of-zip>"
 
-  url "https://github.com/michaelwautier/oneko-swift/releases/download/v#{version}/Oneko-#{version}.zip"
+  url "https://github.com/oneko-app/oneko-swift/releases/download/v#{version}/Oneko-#{version}.zip"
   name "Oneko"
   desc "Cat chases your cursor around the screen (native port of oneko)"
-  homepage "https://github.com/michaelwautier/oneko-swift"
+  homepage "https://github.com/oneko-app/oneko-swift"
 
   depends_on macos: ">= :ventura"
 
   app "Oneko.app"
 
   zap trash: [
-    "~/Library/Preferences/com.michael.oneko.plist",
+    "~/Library/Preferences/com.michael.oneko.plist", # app.oneko.Oneko if Phase 0 renames the bundle ID
   ]
 
   caveats <<~EOS
@@ -65,7 +73,7 @@ cask "oneko" do
 end
 ```
 
-- [ ] `brew tap michaelwautier/tap && brew install --cask oneko` on this machine; verify app runs, launch-at-login registers, `brew uninstall --cask oneko` and `--zap` clean up.
+- [ ] `brew tap oneko-app/tap && brew install --cask oneko` on this machine; verify app runs, launch-at-login registers, `brew uninstall --cask oneko` and `--zap` clean up.
 - [ ] Add install instructions to the README.
 
 ## Phase 4 — Automation (optional, later)
@@ -75,10 +83,13 @@ end
 
 ## Acceptance criteria
 
-- Fresh machine (or fresh brew prefix): `brew install --cask michaelwautier/tap/oneko` → app in `/Applications`, launches (with documented Gatekeeper step if un-notarized), cat appears, launch-at-login works.
+- Fresh machine (or fresh brew prefix): `brew install --cask oneko-app/tap/oneko` → app in `/Applications`, launches (with documented Gatekeeper step if un-notarized), cat appears, launch-at-login works.
+- No personal name/handle in: install command, cask file, release page URLs, README install section.
 - `brew upgrade` path works when a second release is cut.
 
 ## Risks / open questions
 
 - SMAppService launch-at-login with an ad-hoc signature installed via brew: verify status isn't `.requiresApproval` weirdness after quarantine removal; re-test after any signing change.
 - If notarization is adopted later, the release script needs `codesign --options runtime` (hardened runtime) — check the timer/CGEvent usage still works under hardened runtime (should; no entitlements currently needed).
+- Notarization under a *personal* Apple Developer account embeds the legal name in the signing certificate — that would undo the neutral-org anonymity. Only an organization Apple account (needs a D-U-N-S number / legal entity) shows a company name; without one, staying un-notarized is the price of the pseudonym.
+- Org membership is public by default only if you set it public — keep your membership private (org People page → Private) so the org page doesn't list you.
