@@ -12,7 +12,7 @@ swiftc -O Sources/*.swift \
     -framework AppKit -framework ServiceManagement
 
 cp Info.plist "$APP/Contents/Info.plist"
-cp Resources/oneko.png "$APP/Contents/Resources/oneko.png"
+cp Resources/*.png "$APP/Contents/Resources/"
 
 # Ad-hoc signature so SMAppService (launch at login) works.
 codesign --force -s - "$APP"

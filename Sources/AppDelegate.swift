@@ -12,6 +12,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         static let speed = "catSpeed"
         static let horizontal = "horizontalMode"
         static let edge = "dockEdge"
+        static let variant = "spriteVariant"
     }
 
     // Menu items whose state we refresh.
@@ -20,6 +21,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var topItem: NSMenuItem!
     private var bottomItem: NSMenuItem!
     private var speedItems: [NSMenuItem] = []
+    private var variantItems: [NSMenuItem] = []
     private var loginItem: NSMenuItem!
 
     private static let speeds: [(String, CGFloat)] = [
@@ -65,6 +67,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let speedItem = menu.addItem(withTitle: "Speed", action: nil, keyEquivalent: "")
         speedItem.submenu = speedMenu
 
+        let variantMenu = NSMenu()
+        for variant in SpriteVariant.allCases {
+            let item = variantMenu.addItem(withTitle: variant.title,
+                                           action: #selector(setVariant(_:)), keyEquivalent: "")
+            item.representedObject = variant.rawValue
+            variantItems.append(item)
+        }
+        let variantItem = menu.addItem(withTitle: "Sprite", action: nil, keyEquivalent: "")
+        variantItem.submenu = variantMenu
+
         horizontalItem = menu.addItem(withTitle: "Horizontal-Only Mode",
                                       action: #selector(toggleHorizontal), keyEquivalent: "")
         let edgeMenu = NSMenu()
@@ -84,7 +96,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(withTitle: "Quit Oneko", action: #selector(quit), keyEquivalent: "q")
 
         for item in menu.items { item.target = self }
-        for item in speedItems + [topItem!, bottomItem!] { item.target = self }
+        for item in speedItems + variantItems + [topItem!, bottomItem!] { item.target = self }
         statusItem.menu = menu
     }
 
@@ -94,9 +106,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         DockEdge(rawValue: defaults.string(forKey: Keys.edge) ?? "") ?? .bottom
     }
 
+    private var spriteVariant: SpriteVariant {
+        SpriteVariant(rawValue: defaults.string(forKey: Keys.variant) ?? "") ?? .cat
+    }
+
     private func applySettings() {
         let speed = defaults.object(forKey: Keys.speed) as? Double ?? 10
         cat.speed = CGFloat(speed)
+        cat.variant = spriteVariant
         cat.strategy = defaults.bool(forKey: Keys.horizontal)
             ? HorizontalPinnedStrategy(edge: dockEdge)
             : FullChaseStrategy()
@@ -114,6 +131,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         for item in speedItems {
             item.state = (item.representedObject as? CGFloat) == CGFloat(speed) ? .on : .off
         }
+        for item in variantItems {
+            item.state = (item.representedObject as? String) == spriteVariant.rawValue ? .on : .off
+        }
         loginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
     }
 
@@ -128,6 +148,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc private func setSpeed(_ sender: NSMenuItem) {
         guard let value = sender.representedObject as? CGFloat else { return }
         defaults.set(Double(value), forKey: Keys.speed)
+        applySettings()
+        refreshMenuState()
+    }
+
+    @objc private func setVariant(_ sender: NSMenuItem) {
+        guard let raw = sender.representedObject as? String else { return }
+        defaults.set(raw, forKey: Keys.variant)
         applySettings()
         refreshMenuState()
     }

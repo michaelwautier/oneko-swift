@@ -1,9 +1,29 @@
 import AppKit
 
-/// Slices the classic 256x128 oneko sheet (8x4 grid of 32x32 frames) into
+/// The bundled sprite sheets. All variants share the classic oneko.js layout,
+/// so they are interchangeable at runtime.
+enum SpriteVariant: String, CaseIterable {
+    case cat, dog
+
+    var title: String {
+        switch self {
+        case .cat: return "Cat"
+        case .dog: return "Dog"
+        }
+    }
+
+    var resourceName: String {
+        switch self {
+        case .cat: return "oneko"
+        case .dog: return "dog"
+        }
+    }
+}
+
+/// Slices a 256x128 oneko-style sheet (8x4 grid of 32x32 frames) into
 /// per-animation frame lists. Grid coordinates below are (column, row) with
 /// row 0 at the top, matching the layout used by oneko.js.
-enum SpriteSheet {
+final class SpriteSheet {
     static let frameSize: CGFloat = 32
 
     private static let grid: [String: [(Int, Int)]] = [
@@ -26,25 +46,36 @@ enum SpriteSheet {
         "NW": [(1, 0), (1, 1)],
     ]
 
-    static let frames: [String: [CGImage]] = {
-        guard let url = Bundle.main.url(forResource: "oneko", withExtension: "png"),
+    private static var cache: [SpriteVariant: SpriteSheet] = [:]
+
+    static func sheet(for variant: SpriteVariant) -> SpriteSheet {
+        if let cached = cache[variant] { return cached }
+        guard let sheet = SpriteSheet(resourceName: variant.resourceName) else {
+            fatalError("\(variant.resourceName).png missing from bundle resources")
+        }
+        cache[variant] = sheet
+        return sheet
+    }
+
+    private let frames: [String: [CGImage]]
+
+    private init?(resourceName: String) {
+        guard let url = Bundle.main.url(forResource: resourceName, withExtension: "png"),
               let image = NSImage(contentsOf: url),
               let sheet = image.cgImage(forProposedRect: nil, context: nil, hints: nil)
-        else {
-            fatalError("oneko.png missing from bundle resources")
-        }
+        else { return nil }
         let cell = CGFloat(sheet.width) / 8  // supports @2x sheets too
         var result: [String: [CGImage]] = [:]
-        for (name, cells) in grid {
+        for (name, cells) in Self.grid {
             result[name] = cells.compactMap { col, row in
                 sheet.cropping(to: CGRect(x: CGFloat(col) * cell, y: CGFloat(row) * cell,
                                           width: cell, height: cell))
             }
         }
-        return result
-    }()
+        frames = result
+    }
 
-    static func frame(_ name: String, _ index: Int) -> CGImage? {
+    func frame(_ name: String, _ index: Int) -> CGImage? {
         guard let list = frames[name], !list.isEmpty else { return nil }
         return list[((index % list.count) + list.count) % list.count]
     }
