@@ -2,22 +2,68 @@ import AppKit
 
 /// The bundled sprite sheets. All variants share the classic oneko.js layout,
 /// so they are interchangeable at runtime.
-enum SpriteVariant: String, CaseIterable {
-    case cat, dog
+struct SpriteVariant: Hashable {
+    /// Persisted in UserDefaults; also the resource file name (except `cat`,
+    /// whose sheet keeps its historical name `oneko.png`).
+    let rawValue: String
+    let title: String
 
-    var title: String {
-        switch self {
-        case .cat: return "Cat"
-        case .dog: return "Dog"
-        }
+    private init(_ rawValue: String, _ title: String) {
+        self.rawValue = rawValue
+        self.title = title
     }
 
-    var resourceName: String {
-        switch self {
-        case .cat: return "oneko"
-        case .dog: return "dog"
-        }
+    init?(rawValue: String) {
+        guard let match = Self.allCases.first(where: { $0.rawValue == rawValue })
+        else { return nil }
+        self = match
     }
+
+    var resourceName: String { rawValue == "cat" ? "oneko" : rawValue }
+
+    static let cat = SpriteVariant("cat", "Cat")
+
+    /// Menu grouping: the two sheets bundled since the first release, the
+    /// remaining characters of the original X11 oneko, and community art.
+    static let groups: [(name: String, variants: [SpriteVariant])] = [
+        ("Classic", [
+            cat,
+            SpriteVariant("dog", "Dog"),
+        ]),
+        ("X11 Originals", [
+            SpriteVariant("tora-x11", "Tora"),
+            SpriteVariant("sakura", "Sakura"),
+            SpriteVariant("tomoyo", "Tomoyo"),
+            SpriteVariant("bsd", "BSD Daemon"),
+        ]),
+        ("Community", [
+            SpriteVariant("ace", "Ace"),
+            SpriteVariant("black", "Black"),
+            SpriteVariant("bunny", "Bunny"),
+            SpriteVariant("calico", "Calico"),
+            SpriteVariant("catppuccin", "Catppuccin"),
+            SpriteVariant("eevee", "Eevee"),
+            SpriteVariant("esmeralda", "Esmeralda"),
+            SpriteVariant("fox", "Fox"),
+            SpriteVariant("ghost", "Ghost"),
+            SpriteVariant("gray", "Gray"),
+            SpriteVariant("jess", "Jess"),
+            SpriteVariant("kina", "Kina"),
+            SpriteVariant("lucy", "Lucy"),
+            SpriteVariant("maia", "Maia"),
+            SpriteVariant("maria", "Maria"),
+            SpriteVariant("mike", "Mike"),
+            SpriteVariant("silver", "Silver"),
+            SpriteVariant("silversky", "Silver Sky"),
+            SpriteVariant("snuupy", "Snuupy"),
+            SpriteVariant("spirit", "Spirit"),
+            SpriteVariant("tora", "Tora (Color)"),
+            SpriteVariant("valentine", "Valentine"),
+            SpriteVariant("vaporwave", "Vaporwave"),
+        ]),
+    ]
+
+    static let allCases: [SpriteVariant] = groups.flatMap { $0.variants }
 }
 
 /// Slices a 256x128 oneko-style sheet (8x4 grid of 32x32 frames) into
