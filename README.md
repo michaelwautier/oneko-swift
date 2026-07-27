@@ -1,7 +1,8 @@
-# Oneko for macOS
+# oneko-swift — native macOS port of oneko
 
 A native Swift/AppKit port of the classic [oneko](https://github.com/adryd325/oneko.js):
-a little cat that chases your mouse cursor around the screen.
+a little cat that chases your mouse cursor around the screen. No Electron, no
+dependencies.
 
 ## Build & run
 
@@ -42,3 +43,10 @@ Requires Xcode command line tools. No other dependencies.
 - `Resources/oneko.png` — classic sprite sheet (from oneko.js)
 
 Settings persist in `defaults` domain `com.michael.oneko`.
+
+## Credits
+
+The sprite sheet (`Resources/oneko.png`) is the classic oneko sprite set,
+taken from [adryd325/oneko.js](https://github.com/adryd325/oneko.js), which in
+turn traces back to the original X11
+[oneko](https://en.wikipedia.org/wiki/Neko_(software)) by Masayuki Koba.
