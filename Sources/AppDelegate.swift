@@ -68,11 +68,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         speedItem.submenu = speedMenu
 
         let variantMenu = NSMenu()
-        for variant in SpriteVariant.allCases {
-            let item = variantMenu.addItem(withTitle: variant.title,
-                                           action: #selector(setVariant(_:)), keyEquivalent: "")
-            item.representedObject = variant.rawValue
-            variantItems.append(item)
+        for (groupName, variants) in SpriteVariant.groups {
+            let groupMenu = NSMenu()
+            for variant in variants {
+                let item = groupMenu.addItem(withTitle: variant.title,
+                                             action: #selector(setVariant(_:)), keyEquivalent: "")
+                item.representedObject = variant.rawValue
+                if let idle = SpriteSheet.sheet(for: variant).frame("idle", 0) {
+                    // 32px frame at 16pt: 1:1 pixels on Retina, downsampled on 1x.
+                    item.image = NSImage(cgImage: idle, size: NSSize(width: 16, height: 16))
+                }
+                variantItems.append(item)
+            }
+            let groupItem = variantMenu.addItem(withTitle: groupName, action: nil, keyEquivalent: "")
+            groupItem.submenu = groupMenu
         }
         let variantItem = menu.addItem(withTitle: "Sprite", action: nil, keyEquivalent: "")
         variantItem.submenu = variantMenu
