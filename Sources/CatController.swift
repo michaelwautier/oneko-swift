@@ -13,6 +13,7 @@ final class CatController {
     }
     /// Pixels moved per tick; oneko.js default is 10 per 100 ms.
     var speed: CGFloat = 10
+    var variant: SpriteVariant = .cat
 
     private var pos: CGPoint
     private var frameCount = 0
@@ -55,7 +56,7 @@ final class CatController {
     }
 
     private func setSprite(_ name: String, _ index: Int) {
-        window.show(SpriteSheet.frame(name, index))
+        window.show(SpriteSheet.sheet(for: variant).frame(name, index))
     }
 
     private func tick() {
