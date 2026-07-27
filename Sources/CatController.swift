@@ -67,7 +67,7 @@ final class CatController {
         let dy = target.y - pos.y
         let distance = (dx * dx + dy * dy).squareRoot()
 
-        if distance < max(speed, 48) {
+        if strategy.isSettled(dx: dx, dy: dy, threshold: max(speed, 48)) {
             idle()
             return
         }
@@ -89,8 +89,10 @@ final class CatController {
         if dx / distance > 0.5 { direction += "E" }
         setSprite(direction, frameCount)
 
-        pos.x += dx / distance * speed
-        pos.y += dy / distance * speed
+        // Never overshoot: lets the cat land exactly on a pinned row.
+        let step = min(speed, distance)
+        pos.x += dx / distance * step
+        pos.y += dy / distance * step
 
         // Keep the cat on the screen it's headed toward.
         let bounds = screenContaining(target).frame

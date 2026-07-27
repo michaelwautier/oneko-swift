@@ -5,6 +5,16 @@ import AppKit
 /// horizontal-only mode; the animation/direction code never branches on mode.
 protocol TargetStrategy {
     func target(forMouse mouse: CGPoint) -> CGPoint
+    /// Whether the cat is close enough to its target to stop and idle.
+    /// `dx`/`dy` are target minus cat position; `threshold` is the classic
+    /// oneko stop distance.
+    func isSettled(dx: CGFloat, dy: CGFloat, threshold: CGFloat) -> Bool
+}
+
+extension TargetStrategy {
+    func isSettled(dx: CGFloat, dy: CGFloat, threshold: CGFloat) -> Bool {
+        (dx * dx + dy * dy).squareRoot() < threshold
+    }
 }
 
 func screenContaining(_ point: CGPoint) -> NSScreen {
@@ -34,5 +44,11 @@ struct HorizontalPinnedStrategy: TargetStrategy {
         let half = SpriteSheet.frameSize / 2
         let y = edge == .top ? frame.maxY - half : frame.minY + half
         return CGPoint(x: mouse.x, y: y)
+    }
+
+    /// The cat keeps its distance horizontally but must land exactly on the
+    /// pinned row — otherwise it stops a few pixels off the edge.
+    func isSettled(dx: CGFloat, dy: CGFloat, threshold: CGFloat) -> Bool {
+        abs(dx) < threshold && abs(dy) < 1
     }
 }
