@@ -53,10 +53,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let menu = NSMenu()
 
-        showHideItem = menu.addItem(withTitle: "Hide Cat",
-                                    action: #selector(toggleShown), keyEquivalent: "")
-        menu.addItem(.separator())
-
         let speedMenu = NSMenu()
         for (name, value) in Self.speeds {
             let item = speedMenu.addItem(withTitle: name,
@@ -102,6 +98,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         loginItem = menu.addItem(withTitle: "Launch at Login",
                                  action: #selector(toggleLaunchAtLogin), keyEquivalent: "")
         menu.addItem(.separator())
+        showHideItem = menu.addItem(withTitle: "Hide Cat",
+                            action: #selector(toggleShown), keyEquivalent: "")
         menu.addItem(withTitle: "Quit Oneko", action: #selector(quit), keyEquivalent: "q")
 
         for item in menu.items { item.target = self }
