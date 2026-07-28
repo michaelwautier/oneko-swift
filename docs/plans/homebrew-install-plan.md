@@ -39,9 +39,9 @@ Default choice for this plan: **option 2** to start (zero cost, one-line caveat)
 
 ## Phase 2 — First GitHub release
 
-- [ ] Tag `v1.1.0` (first properly versioned release; pick up the horizontal-mode fix).
-- [ ] `gh release create v1.1.0 Oneko-1.1.0.zip --notes ...`.
-- [ ] Record the zip's sha256 for the cask.
+- [x] Tag `v1.1.0` (first properly versioned release; pick up the horizontal-mode fix).
+- [x] `gh release create v1.1.0 Oneko-1.1.0.zip --notes ...`.
+- [x] Record the zip's sha256 for the cask.
 
 ## Phase 3 — Tap + cask
 
@@ -73,8 +73,8 @@ cask "oneko" do
 end
 ```
 
-- [ ] `brew tap oneko-swift/tap && brew install --cask oneko` on this machine; verify app runs, launch-at-login registers, `brew uninstall --cask oneko` and `--zap` clean up.
-- [ ] Add install instructions to the README.
+- [x] `brew tap oneko-swift/tap && brew install --cask oneko` on this machine; verify app runs, launch-at-login registers, `brew uninstall --cask oneko` and `--zap` clean up.
+- [x] Add install instructions to the README.
 
 ## Phase 4 — Automation (optional, later)
 
@@ -93,3 +93,11 @@ end
 - If notarization is adopted later, the release script needs `codesign --options runtime` (hardened runtime) — check the timer/CGEvent usage still works under hardened runtime (should; no entitlements currently needed).
 - Notarization under a *personal* Apple Developer account embeds the legal name in the signing certificate — that would undo the neutral-org anonymity. Only an organization Apple account (needs a D-U-N-S number / legal entity) shows a company name; without one, staying un-notarized is the price of the pseudonym.
 - Org membership is public by default only if you set it public — keep your membership private (org People page → Private) so the org page doesn't list you.
+
+## Shipped 2026-07-28 — field notes
+
+- Org name ended up `oneko-swift` (user's choice at creation time), not `oneko-app`.
+- Homebrew 6 requires `brew trust oneko-swift/tap` before installing from a third-party tap.
+- Homebrew 6 removed `--no-quarantine`; macOS 15+ also removed right-click→Open. The documented path is System Settings → Privacy & Security → "Open Anyway".
+- `depends_on macos: ">= :ventura"` string form is deprecated → `depends_on macos: :ventura`.
+- Full cycle verified locally: tap → install → launch from /Applications → uninstall → `--zap` (trashes `app.oneko.Oneko.plist`) → reinstall.

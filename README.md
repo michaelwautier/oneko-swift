@@ -4,6 +4,19 @@ A native Swift/AppKit port of the classic [oneko](https://github.com/adryd325/on
 a little cat that chases your mouse cursor around the screen. No Electron, no
 dependencies.
 
+## Install
+
+```sh
+brew install --cask oneko-swift/tap/oneko
+```
+
+Homebrew 6+ asks you to trust third-party taps first: `brew trust oneko-swift/tap`.
+
+The app is not notarized, so macOS blocks the first launch: allow it via
+System Settings → Privacy & Security → "Open Anyway" (on older macOS,
+right-click Oneko.app → Open). Building from source avoids the Gatekeeper
+step entirely.
+
 ## Build & run
 
 ```sh
