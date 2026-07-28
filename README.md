@@ -22,7 +22,7 @@ Requires Xcode command line tools. No other dependencies.
   edge), tired → sleeping after prolonged inactivity.
 - **Horizontal-only mode**: the cat ignores the cursor's vertical position and
   stays pinned to a row along the top or bottom screen edge, following only the
-  cursor's x. It follows the cursor's *screen* on multi-monitor setups (running
+  cursor's x. It follows the cursor's _screen_ on multi-monitor setups (running
   to the new screen's edge row when the cursor changes displays) — same as in
   normal mode, where it simply chases the cursor across displays.
 - **27 sprite variants**, grouped in the menu bar as Classic (cat, dog), X11
@@ -38,11 +38,11 @@ Requires Xcode command line tools. No other dependencies.
 
 Measured with `top` on an Apple Silicon Mac:
 
-| State | CPU | Memory | Power score |
-|---|---|---|---|
-| Cat visible, idle or sleeping | ~0.1% | ~12 MB | ~0.4 |
-| Cat chasing a moving cursor | ~1.5% | ~12 MB | ~1.5 |
-| Cat hidden | 0.0% | ~12 MB | 0.0 |
+| State                         | CPU   | Memory | Power score |
+| ----------------------------- | ----- | ------ | ----------- |
+| Cat visible, idle or sleeping | ~0.1% | ~12 MB | ~0.4        |
+| Cat chasing a moving cursor   | ~1.5% | ~12 MB | ~1.5        |
+| Cat hidden                    | 0.0%  | ~12 MB | 0.0         |
 
 Why it stays that cheap:
 
@@ -94,32 +94,32 @@ Settings persist in `defaults` domain `app.oneko.Oneko`.
 ### Classic
 
 | ![cat](docs/previews/oneko.png) | ![dog](docs/previews/dog.png) |
-|:---:|:---:|
-| Cat | Dog |
+| :-----------------------------: | :---------------------------: |
+|               Cat               |              Dog              |
 
 ### X11 Originals
 
 | ![tora](docs/previews/tora-x11.png) | ![sakura](docs/previews/sakura.png) | ![tomoyo](docs/previews/tomoyo.png) | ![bsd](docs/previews/bsd.png) |
-|:---:|:---:|:---:|:---:|
-| Tora | Sakura | Tomoyo | BSD Daemon |
+| :---------------------------------: | :---------------------------------: | :---------------------------------: | :---------------------------: |
+|                Tora                 |               Sakura                |               Tomoyo                |          BSD Daemon           |
 
 ### Community
 
 | ![ace](docs/previews/ace.png) | ![black](docs/previews/black.png) | ![bunny](docs/previews/bunny.png) | ![calico](docs/previews/calico.png) | ![catppuccin](docs/previews/catppuccin.png) | ![eevee](docs/previews/eevee.png) |
-|:---:|:---:|:---:|:---:|:---:|:---:|
-| Ace | Black | Bunny | Calico | Catppuccin | Eevee |
+| :---------------------------: | :-------------------------------: | :-------------------------------: | :---------------------------------: | :-----------------------------------------: | :-------------------------------: |
+|              Ace              |               Black               |               Bunny               |               Calico                |                 Catppuccin                  |               Eevee               |
 
 | ![esmeralda](docs/previews/esmeralda.png) | ![fox](docs/previews/fox.png) | ![ghost](docs/previews/ghost.png) | ![gray](docs/previews/gray.png) | ![jess](docs/previews/jess.png) | ![kina](docs/previews/kina.png) |
-|:---:|:---:|:---:|:---:|:---:|:---:|
-| Esmeralda | Fox | Ghost | Gray | Jess | Kina |
+| :---------------------------------------: | :---------------------------: | :-------------------------------: | :-----------------------------: | :-----------------------------: | :-----------------------------: |
+|                 Esmeralda                 |              Fox              |               Ghost               |              Gray               |              Jess               |              Kina               |
 
 | ![lucy](docs/previews/lucy.png) | ![maia](docs/previews/maia.png) | ![maria](docs/previews/maria.png) | ![mike](docs/previews/mike.png) | ![silver](docs/previews/silver.png) | ![silversky](docs/previews/silversky.png) |
-|:---:|:---:|:---:|:---:|:---:|:---:|
-| Lucy | Maia | Maria | Mike | Silver | Silver Sky |
+| :-----------------------------: | :-----------------------------: | :-------------------------------: | :-----------------------------: | :---------------------------------: | :---------------------------------------: |
+|              Lucy               |              Maia               |               Maria               |              Mike               |               Silver                |                Silver Sky                 |
 
-| ![spirit](docs/previews/spirit.png) | ![valentine](docs/previews/valentine.png) | ![vaporwave](docs/previews/vaporwave.png) | | | |
-|:---:|:---:|:---:|:---:|:---:|:---:|
-| Spirit | Valentine | Vaporwave | | | |
+| ![spirit](docs/previews/spirit.png) | ![valentine](docs/previews/valentine.png) | ![vaporwave](docs/previews/vaporwave.png) |
+| :---------------------------------: | :---------------------------------------: | :---------------------------------------: |
+|               Spirit                |                 Valentine                 |                 Vaporwave                 |
 
 ## Credits
 
@@ -128,7 +128,7 @@ All sprite art belongs to its original creators.
 - **Cat** (`Resources/oneko.png`) — the classic oneko sprite set, taken from
   [adryd325/oneko.js](https://github.com/adryd325/oneko.js), which in turn
   traces back to the original X11
-  [oneko](https://en.wikipedia.org/wiki/Neko_(software)) by Masayuki Koba.
+  [oneko](<https://en.wikipedia.org/wiki/Neko_(software)>) by Masayuki Koba.
 - **Dog, Tora, Sakura, Tomoyo, BSD Daemon** — generated with
   `tools/makesheet.swift` from the original oneko XBM bitmaps and transparency
   masks (oneko-sakura sources, mirrored at
