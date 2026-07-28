@@ -55,9 +55,7 @@ struct SpriteVariant: Hashable {
             SpriteVariant("mike", "Mike"),
             SpriteVariant("silver", "Silver"),
             SpriteVariant("silversky", "Silver Sky"),
-            SpriteVariant("snuupy", "Snuupy"),
             SpriteVariant("spirit", "Spirit"),
-            SpriteVariant("tora", "Tora (Color)"),
             SpriteVariant("valentine", "Valentine"),
             SpriteVariant("vaporwave", "Vaporwave"),
         ]),
@@ -112,7 +110,7 @@ final class SpriteSheet {
     /// A variant's idle frame as a standalone 32x32 copy for menu icons.
     /// Bypasses the runtime cache and detaches from the sheet's backing store
     /// (crops retain the whole decoded sheet), so building the menu doesn't
-    /// keep all 29 sheets resident — only the variant the cat wears is.
+    /// keep every sheet resident — only the variant the cat wears is.
     static func menuIcon(for variant: SpriteVariant) -> NSImage? {
         guard let idle = SpriteSheet(resourceName: variant.resourceName)?.frame("idle", 0),
               let ctx = CGContext(data: nil, width: 32, height: 32, bitsPerComponent: 8,
