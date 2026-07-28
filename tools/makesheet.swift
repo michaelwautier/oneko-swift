@@ -9,7 +9,7 @@ func parseXBM(_ path: String) -> [[Bool]] {
         let hexStart = r.upperBound
         var hexEnd = hexStart
         while hexEnd < text.endIndex, text[hexEnd].isHexDigit { hexEnd = text.index(after: hexEnd) }
-        bytes.append(UInt8(text[hexStart..<hexEnd], radix: 16)!)
+        if let byte = UInt8(text[hexStart..<hexEnd], radix: 16) { bytes.append(byte) }
         i = hexEnd
     }
     precondition(bytes.count >= 128, "expected 128 bytes in \(path), got \(bytes.count)")
