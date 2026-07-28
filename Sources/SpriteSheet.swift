@@ -109,6 +109,23 @@ final class SpriteSheet {
         return sheet
     }
 
+    /// A variant's idle frame as a standalone 32x32 copy for menu icons.
+    /// Bypasses the runtime cache and detaches from the sheet's backing store
+    /// (crops retain the whole decoded sheet), so building the menu doesn't
+    /// keep all 29 sheets resident — only the variant the cat wears is.
+    static func menuIcon(for variant: SpriteVariant) -> NSImage? {
+        guard let idle = SpriteSheet(resourceName: variant.resourceName)?.frame("idle", 0),
+              let ctx = CGContext(data: nil, width: 32, height: 32, bitsPerComponent: 8,
+                                  bytesPerRow: 0, space: CGColorSpace(name: CGColorSpace.sRGB)!,
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+        else { return nil }
+        ctx.interpolationQuality = .none
+        ctx.draw(idle, in: CGRect(x: 0, y: 0, width: 32, height: 32))
+        guard let copy = ctx.makeImage() else { return nil }
+        // 32px at 16pt: 1:1 pixels on Retina, downsampled on 1x.
+        return NSImage(cgImage: copy, size: NSSize(width: 16, height: 16))
+    }
+
     private let frames: [String: [CGImage]]
 
     private init?(resourceName: String) {

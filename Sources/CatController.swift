@@ -7,6 +7,7 @@ import AppKit
 final class CatController {
     private let window = CatWindow()
     private var timer: Timer?
+    private var activity: NSObjectProtocol?
 
     var strategy: TargetStrategy = FullChaseStrategy() {
         didSet { wake() }
@@ -30,6 +31,11 @@ final class CatController {
 
     func start() {
         guard timer == nil else { return }
+        // Keep the timer steady while the cat is visible; ended in stop() so
+        // the process can App Nap whenever the cat is hidden.
+        activity = ProcessInfo.processInfo.beginActivity(
+            options: .userInitiatedAllowingIdleSystemSleep,
+            reason: "Cat animation")
         window.move(center: pos)
         window.orderFrontRegardless()
         let t = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in self?.tick() }
@@ -42,6 +48,8 @@ final class CatController {
         timer?.invalidate()
         timer = nil
         window.orderOut(nil)
+        if let activity { ProcessInfo.processInfo.endActivity(activity) }
+        activity = nil
     }
 
     var isRunning: Bool { timer != nil }
