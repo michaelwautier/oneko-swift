@@ -2,7 +2,8 @@
 
 A native Swift/AppKit port of the classic [oneko](https://github.com/adryd325/oneko.js):
 a little cat that chases your mouse cursor around the screen. No Electron, no
-dependencies.
+dependencies, no network access, no permission prompts — a ~320 KB app that
+does one thing well.
 
 [![Latest release](https://img.shields.io/github/v/release/oneko-swift/oneko-swift)](https://github.com/oneko-swift/oneko-swift/releases/latest)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -62,26 +63,51 @@ Requires Xcode command line tools. No other dependencies.
 
 ## Features
 
-- Borderless, transparent, **click-through** overlay — the cat never intercepts
-  clicks and renders above every app, including full-screen apps, on all Spaces.
-- Faithful port of the original state machine: 8-directional running, alert,
-  idle, random face-washing and wall-scratching (when idling near a screen
-  edge), tired → sleeping after prolonged inactivity.
+Everything lives in the menu bar item (cat icon) — there is no settings
+window, no onboarding, no Dock icon. Just the cat.
+
+- **Click-through overlay** — borderless and transparent; the cat never
+  intercepts a click and renders above every app, including full-screen apps,
+  on all Spaces.
+- **Faithful port** of the original state machine: 8-directional running,
+  alert, idle, random face-washing and wall-scratching (when idling near a
+  screen edge), tired → sleeping after prolonged inactivity.
+- **27 sprite variants**, grouped as Classic (cat, dog), X11 Originals (tora,
+  sakura, tomoyo, the BSD daemon) and Community (21 sheets of community pixel
+  art) — each menu entry shows the sprite's idle frame as its icon. See the
+  [gallery](#sprite-gallery) below.
+- **Speed** — Slow, Normal (the classic 10 px per 100 ms tick) or Fast.
+- **Choose a display**: by default the cat chases the cursor across every
+  monitor; lock it to one and it waits at that screen's edge while the cursor
+  is elsewhere. The lock is remembered by the monitor's hardware identity, so
+  it survives unplugging, docking and reboots — even when macOS reshuffles
+  display IDs.
 - **Horizontal-only mode**: the cat ignores the cursor's vertical position and
-  stays pinned to a row along the top or bottom screen edge, following only the
-  cursor's x. It follows the cursor's _screen_ on multi-monitor setups (running
-  to the new screen's edge row when the cursor changes displays) — same as in
-  normal mode, where it simply chases the cursor across displays.
-- **27 sprite variants**, grouped in the menu bar as Classic (cat, dog), X11
-  Originals (tora, sakura, tomoyo, the BSD daemon) and Community (21 sheets of
-  community pixel art). See the [gallery](#sprite-gallery) below.
-- Menu bar item (cat icon): Show/Hide Cat, Speed (Slow/Normal/Fast), Sprite
-  (grouped submenu — each entry shows the sprite's idle frame as its icon),
-  Horizontal-Only Mode + Dock to Top/Bottom, Launch at Login, Quit.
+  stays pinned to a row along the top or bottom screen edge (your pick),
+  following only the cursor's x — like the original strip-of-desk cat. It
+  still follows the cursor across monitors, running to the new screen's edge
+  row.
+- **Multi-monitor done right**: works with mixed Retina/non-Retina setups and
+  non-rectangular arrangements — the cat is confined to real screens, never
+  parked in the dead space between them.
+- **Launch at Login** (via the system `SMAppService` — shows up in System
+  Settings → Login Items like a good citizen), and **Show/Hide** that reduces
+  the app to literally zero CPU.
+- **Private by construction**: the app never opens a network connection — no
+  updater, no telemetry, no downloads (updates come through Homebrew or
+  GitHub Releases). It needs no permissions either: no Accessibility, no
+  Input Monitoring, no Screen Recording. There is nothing to grant and
+  nothing to trust beyond the ~320 KB binary itself.
 - **Lightweight**: ~0.1% CPU idle, ~1.5% mid-chase, ~12 MB, exactly zero when
   hidden — see [Performance](#performance).
 
 ## Performance
+
+A pixel cat that animates 10 times a second doesn't need a game engine. There
+is no GPU render loop here, no display link, no full-screen transparent layer
+redrawn every vsync — the app is a single 32×32 window that moves, driven by
+one timer on the main run loop. That design keeps it invisible in Activity
+Monitor and off your battery report.
 
 Measured with `top` on an Apple Silicon Mac:
 
