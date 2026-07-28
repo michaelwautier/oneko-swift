@@ -45,8 +45,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func setUpStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        // cat.fill needs macOS 14; pawprint.fill covers 13.
-        if let icon = NSImage(systemSymbolName: "cat.fill", accessibilityDescription: "Oneko")
+        // Fallbacks if the bundled icon is missing: cat.fill needs macOS 14,
+        // pawprint.fill covers 13.
+        if let icon = Self.makeStatusIcon() {
+            statusItem.button?.image = icon
+        } else if let icon = NSImage(systemSymbolName: "cat.fill", accessibilityDescription: "Oneko")
             ?? NSImage(systemSymbolName: "pawprint.fill", accessibilityDescription: "Oneko") {
             statusItem.button?.image = icon
         } else {
@@ -110,6 +113,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         for item in menu.items { item.target = self }
         for item in speedItems + variantItems + [topItem!, bottomItem!] { item.target = self }
         statusItem.menu = menu
+    }
+
+    /// oneko-icon.png is 15x15 pixel art. A drawing handler renders it per
+    /// backing scale with interpolation off, so it stays crisp on any display.
+    private static func makeStatusIcon() -> NSImage? {
+        guard let url = Bundle.main.url(forResource: "oneko-icon", withExtension: "png"),
+              let base = NSImage(contentsOf: url),
+              let cg = base.cgImage(forProposedRect: nil, context: nil, hints: nil)
+        else { return nil }
+        // The asset is 1x art: its pixel size is its point size.
+        let size = NSSize(width: cg.width, height: cg.height)
+        let icon = NSImage(size: size, flipped: false) { rect in
+            guard let ctx = NSGraphicsContext.current?.cgContext else { return false }
+            ctx.interpolationQuality = .none
+            ctx.draw(cg, in: rect)
+            return true
+        }
+        icon.accessibilityDescription = "Oneko"
+        return icon
     }
 
     // MARK: - Settings
