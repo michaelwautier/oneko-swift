@@ -78,14 +78,15 @@ end
 
 ## Phase 4 — Automation (optional, later)
 
-- [ ] GitHub Actions workflow on tag push: build universal zip, create release, compute sha256.
-- [ ] Second job (or `brew bump-cask-pr`-style script) that opens a PR against `homebrew-tap` bumping `version` + `sha256`.
+- [x] GitHub Actions workflow on tag push: build universal zip, create release, compute sha256.
+- [x] Second job (or `brew bump-cask-pr`-style script) that opens a PR against `homebrew-tap` bumping `version` + `sha256`.
 
-Workflow added in `.github/workflows/release.yml` (both jobs). Tick after the
-first tag-push run succeeds end to end. Setup required first: a fine-grained
-PAT (org `oneko-swift`, repo `homebrew-tap`, Contents + Pull requests
-read/write) stored as the `TAP_GITHUB_TOKEN` secret in `oneko-swift/oneko-swift`.
+Shipped in `.github/workflows/release.yml` (both jobs); first green run on
+v1.1.4 (2026-07-28). Auth: fine-grained PAT (org `oneko-swift`, repo
+`homebrew-tap`, Contents + Pull requests read/write) stored as the
+`TAP_GITHUB_TOKEN` secret in `oneko-swift/oneko-swift` — rotate on expiry.
 Tap-bump commits are authored by `github-actions[bot]` to keep the pseudonym.
+Tap PR is merged manually (last checkpoint before users get the build).
 
 ## Acceptance criteria
 
