@@ -4,7 +4,7 @@
 
 ## Goal
 
-`brew install --cask oneko-app/tap/oneko` puts a working `Oneko.app` in `/Applications`, with no personal name in any user-facing string (neutral-org path; `oneko-app` is the working org name — checked free on GitHub as of 2026-07-28, along with `oneko-mac`, `oneko-project`, `onekoapp`).
+`brew install --cask oneko-swift/tap/oneko` puts a working `Oneko.app` in `/Applications`, with no personal name in any user-facing string (neutral-org path; `oneko-swift` is the working org name — checked free on GitHub as of 2026-07-28, along with `oneko-mac`, `oneko-project`, `onekoapp`).
 
 ## Current state
 
@@ -24,18 +24,18 @@ Default choice for this plan: **option 2** to start (zero cost, one-line caveat)
 
 ## Phase 0 — Neutral org (do first)
 
-- [ ] Create the GitHub org (web UI only — can't be scripted): `oneko-app` (free as of 2026-07-28).
-- [ ] Before pushing anything to the org, set a pseudonymous commit identity so new commits don't carry the personal name/email: `git config user.name` + GitHub noreply email, and enable "Keep my email addresses private" + "Block command line pushes that expose my email" on GitHub. Existing history keeps "Michaël W." unless rewritten — accepted, not worth a rewrite.
-- [ ] Transfer `michaelwautier/oneko-swift` → `oneko-app/oneko-swift` (repo Settings → Transfer). GitHub redirects the old URL; still update the local remote: `git remote set-url origin git@github.com:oneko-app/oneko-swift.git`.
-- [ ] Update README links/badges that mention the old owner.
-- [ ] Optional but on-theme: change `CFBundleIdentifier` from `com.michael.oneko` to `app.oneko.Oneko`. Do it now if at all — it resets existing prefs and launch-at-login registration (only this machine affected today), and the cask `zap` path plus the Raycast plan's `defaults read` must match.
+- [x] Create the GitHub org (web UI only — can't be scripted): `oneko-swift` (free as of 2026-07-28).
+- [x] Before pushing anything to the org, set a pseudonymous commit identity so new commits don't carry the personal name/email: `git config user.name` + GitHub noreply email, and enable "Keep my email addresses private" + "Block command line pushes that expose my email" on GitHub. Existing history keeps "Michaël W." unless rewritten — accepted, not worth a rewrite.
+- [x] Transfer `michaelwautier/oneko-swift` → `oneko-swift/oneko-swift` (repo Settings → Transfer). GitHub redirects the old URL; still update the local remote: `git remote set-url origin git@github.com:oneko-swift/oneko-swift.git`.
+- [x] Update README links (none existed — credits only link upstream art repos)/badges that mention the old owner.
+- [x] Optional but on-theme: change `CFBundleIdentifier` from `com.michael.oneko` to `app.oneko.Oneko`. Done 2026-07-28 (prefs/login-item reset on this machine accepted).
 
 ## Phase 1 — Make the build releasable
 
-- [ ] Parameterize version: `build.sh` accepts `VERSION` (env or arg) and stamps `CFBundleVersion` / `CFBundleShortVersionString` into the copied `Info.plist` (e.g. via `plutil -replace`).
-- [ ] Build a universal binary: compile twice (`-target arm64-apple-macos13` and `-target x86_64-apple-macos13`) and `lipo -create`. Verify with `lipo -archs`.
-- [ ] Add a `release.sh` (or extend `build.sh`) that produces `Oneko-<version>.zip` via `ditto -c -k --keepParent build/Oneko.app ...` and prints its `shasum -a 256`.
-- [ ] Smoke-test the zipped app on a clean unzip: launches, menu works, sprites load (`Resources/*.png` are inside the bundle).
+- [x] Parameterize version: `build.sh` accepts `VERSION` (env or arg) and stamps `CFBundleVersion` / `CFBundleShortVersionString` into the copied `Info.plist` (via `plutil -replace`). Default stays `1.0` for dev builds.
+- [x] Build a universal binary: compile twice (`-target arm64-apple-macos13` and `-target x86_64-apple-macos13`) and `lipo -create`. Verified with `lipo -archs` → `x86_64 arm64`.
+- [x] Add a `release.sh` that produces `Oneko-<version>.zip` via `ditto -c -k --keepParent` and prints its `shasum -a 256`.
+- [x] Smoke-test the zipped app on a clean unzip: launches from an isolated directory, 27 sheets + menu icon bundled.
 
 ## Phase 2 — First GitHub release
 
@@ -45,24 +45,24 @@ Default choice for this plan: **option 2** to start (zero cost, one-line caveat)
 
 ## Phase 3 — Tap + cask
 
-- [ ] Create repo `oneko-app/homebrew-tap` with `Casks/oneko.rb`:
+- [ ] Create repo `oneko-swift/homebrew-tap` with `Casks/oneko.rb`:
 
 ```ruby
 cask "oneko" do
   version "1.1.0"
   sha256 "<sha256-of-zip>"
 
-  url "https://github.com/oneko-app/oneko-swift/releases/download/v#{version}/Oneko-#{version}.zip"
+  url "https://github.com/oneko-swift/oneko-swift/releases/download/v#{version}/Oneko-#{version}.zip"
   name "Oneko"
   desc "Cat chases your cursor around the screen (native port of oneko)"
-  homepage "https://github.com/oneko-app/oneko-swift"
+  homepage "https://github.com/oneko-swift/oneko-swift"
 
   depends_on macos: ">= :ventura"
 
   app "Oneko.app"
 
   zap trash: [
-    "~/Library/Preferences/com.michael.oneko.plist", # app.oneko.Oneko if Phase 0 renames the bundle ID
+    "~/Library/Preferences/app.oneko.Oneko.plist",
   ]
 
   caveats <<~EOS
@@ -73,7 +73,7 @@ cask "oneko" do
 end
 ```
 
-- [ ] `brew tap oneko-app/tap && brew install --cask oneko` on this machine; verify app runs, launch-at-login registers, `brew uninstall --cask oneko` and `--zap` clean up.
+- [ ] `brew tap oneko-swift/tap && brew install --cask oneko` on this machine; verify app runs, launch-at-login registers, `brew uninstall --cask oneko` and `--zap` clean up.
 - [ ] Add install instructions to the README.
 
 ## Phase 4 — Automation (optional, later)
@@ -83,7 +83,7 @@ end
 
 ## Acceptance criteria
 
-- Fresh machine (or fresh brew prefix): `brew install --cask oneko-app/tap/oneko` → app in `/Applications`, launches (with documented Gatekeeper step if un-notarized), cat appears, launch-at-login works.
+- Fresh machine (or fresh brew prefix): `brew install --cask oneko-swift/tap/oneko` → app in `/Applications`, launches (with documented Gatekeeper step if un-notarized), cat appears, launch-at-login works.
 - No personal name/handle in: install command, cask file, release page URLs, README install section.
 - `brew upgrade` path works when a second release is cut.
 

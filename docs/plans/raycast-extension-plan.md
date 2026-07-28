@@ -36,7 +36,7 @@ Go with **option 1**.
 
 ## Phase 2 — Extension scaffold
 
-- [ ] `npm init raycast-extension` (React + TypeScript, `@raycast/api`). Keep it in a separate repo under the neutral org (`oneko-app/oneko-raycast`, after the Homebrew plan's Phase 0 creates the org) or a top-level `raycast/` folder here — separate repo preferred if publishing to the store (store PRs vendor the extension into `raycast/extensions`).
+- [ ] `npm init raycast-extension` (React + TypeScript, `@raycast/api`). Keep it in a separate repo under the neutral org (`oneko-swift/oneko-raycast`, after the Homebrew plan's Phase 0 creates the org) or a top-level `raycast/` folder here — separate repo preferred if publishing to the store (store PRs vendor the extension into `raycast/extensions`).
 - [ ] Extension metadata: name `oneko`, icon 512×512 (reuse a sprite frame from `docs/previews`, upscaled nearest-neighbor).
 
 ## Phase 3 — Commands
@@ -50,7 +50,7 @@ All "fire URL" commands are `mode: "no-view"` running `open -g` via `child_proce
 - [ ] **Choose Sprite** (list view, grouped by the same groups as `SpriteVariant.groups`, one row per variant with its preview image bundled into the extension's assets) → `oneko://variant/...`
 - [ ] **Quit Oneko** (no-view) → `oneko://quit`
 - [ ] Nice-to-have: read current settings for checkmarks in lists via `defaults read com.michael.oneko` (or `app.oneko.Oneko` if the Homebrew plan's Phase 0 renames the bundle ID — keep in sync; read-only is safe, writes stay URL-only).
-- [ ] Error handling: if `open` fails because the app isn't installed, show a toast linking to install instructions (`brew install --cask oneko-app/tap/oneko`).
+- [ ] Error handling: if `open` fails because the app isn't installed, show a toast linking to install instructions (`brew install --cask oneko-swift/tap/oneko`).
 
 ## Phase 4 — Ship
 

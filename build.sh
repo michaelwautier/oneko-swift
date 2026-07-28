@@ -1,7 +1,10 @@
 #!/bin/zsh
 # Builds Oneko.app into build/. Requires Xcode command line tools.
+# Usage: ./build.sh [version]   (or VERSION=x.y.z ./build.sh; default 1.0)
 set -euo pipefail
 cd "$(dirname "$0")"
+
+VERSION="${1:-${VERSION:-1.0}}"
 
 APP=build/Oneko.app
 rm -rf "$APP"
@@ -18,6 +21,8 @@ lipo -create -output "$APP/Contents/MacOS/Oneko" build/Oneko-arm64 build/Oneko-x
 rm build/Oneko-arm64 build/Oneko-x86_64
 
 cp Info.plist "$APP/Contents/Info.plist"
+plutil -replace CFBundleShortVersionString -string "$VERSION" "$APP/Contents/Info.plist"
+plutil -replace CFBundleVersion -string "$VERSION" "$APP/Contents/Info.plist"
 cp Resources/*.png Resources/icons/*.png "$APP/Contents/Resources/"
 
 # Ad-hoc signature so SMAppService (launch at login) works.
