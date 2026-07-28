@@ -4,10 +4,14 @@
   "title": "Oneko",
   "description": "Control Oneko, the desktop cat that chases your cursor.",
   "icon": "icon.png",
-  "author": "oneko_app",
-  "categories": ["Fun"],
+  "author": "miklw",
+  "categories": [
+    "Fun"
+  ],
   "license": "MIT",
-  "platforms": ["macOS"],
+  "platforms": [
+    "macOS"
+  ],
   "commands": [
     {
       "name": "toggle",
@@ -38,8 +42,11 @@
     "@raycast/api": "^1.0.0"
   },
   "devDependencies": {
+    "@raycast/eslint-config": "^2.2.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
+    "eslint": "^10.8.0",
+    "prettier": "^3.9.6",
     "typescript": "^5.0.0"
   },
   "scripts": {

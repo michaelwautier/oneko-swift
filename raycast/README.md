@@ -10,25 +10,18 @@ that chases your cursor, without leaving Raycast.
 - **Set Speed** — slow, normal, or fast
 - **Quit Oneko** — quit the app
 
-The extension requires the Oneko app (macOS 13+):
+The extension requires the Oneko app 1.2 or later (macOS 13+):
 
 ```sh
 brew install --cask oneko-swift/tap/oneko
 ```
 
-All commands talk to the app through its `oneko://` URL scheme (Oneko 1.2+),
-so the extension needs no permissions of its own.
+All commands talk to the app through its `oneko://` URL scheme, so the
+extension needs no permissions of its own.
 
 ## Development
 
-```sh
-npm install
-npx ray develop
-```
-
-The skin thumbnails in `assets/skins/` are generated from the sprite sheets:
-`swift ../tools/makethumbs.swift ../Resources assets/skins`.
-
-Before publishing to the Raycast Store, set `author` in `package.json` to
-the publishing Raycast account's handle (`ray lint` validates it against
-raycast.com).
+The extension lives in the
+[oneko-swift repo](https://github.com/oneko-swift/oneko-swift/tree/main/raycast),
+where the skin thumbnails in `assets/skins/` are generated from the sprite
+sheets with `swift tools/makethumbs.swift Resources raycast/assets/skins`.
