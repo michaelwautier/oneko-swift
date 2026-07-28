@@ -52,6 +52,34 @@ xattr -dr com.apple.quarantine /Applications/Oneko.app
 
 Building from source (below) avoids the Gatekeeper step entirely.
 
+## Raycast extension
+
+[`raycast/`](raycast/) holds a Raycast extension with four commands: Toggle
+Cat, Change Skin (a grid with sprite previews), Set Speed, and Quit Oneko.
+It is a remote control, not a replacement — it drives the installed app
+through the URL scheme below, so install Oneko first (see above). Until the
+extension reaches the Raycast Store, import it locally:
+
+```sh
+cd raycast && npm install && npx ray develop
+```
+
+## Scripting (oneko:// URL scheme)
+
+Anything that can open a URL can control Oneko — Raycast Quicklinks, Apple
+Shortcuts, or `open` in a script. Opening any `oneko://` URL launches the
+app if it isn't running.
+
+| URL | Effect |
+| --- | --- |
+| `oneko://show`, `oneko://hide`, `oneko://toggle` | Show or hide the cat |
+| `oneko://skin/<id>` | Switch sprite, e.g. `oneko://skin/sakura` |
+| `oneko://speed/<slow\|normal\|fast>` | Set the chase speed |
+| `oneko://quit` | Quit the app |
+
+Skin ids are the sheet file names in [`Resources/`](Resources/) (the classic
+cat is `cat`).
+
 ## Build & run
 
 ```sh
