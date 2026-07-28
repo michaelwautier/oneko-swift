@@ -13,7 +13,9 @@ final class CatController {
     }
     /// Pixels moved per tick; oneko.js default is 10 per 100 ms.
     var speed: CGFloat = 10
-    var variant: SpriteVariant = .cat
+    var variant: SpriteVariant = .cat {
+        didSet { wake() }
+    }
 
     private var pos: CGPoint
     private var frameCount = 0
@@ -71,8 +73,7 @@ final class CatController {
             idle()
             return
         }
-        idleAnimation = nil
-        idleAnimationFrame = 0
+        resetIdleAnimation()
 
         if idleTime > 1 {
             setSprite("alert", 0)

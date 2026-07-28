@@ -45,7 +45,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func setUpStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        if let icon = NSImage(systemSymbolName: "cat.fill", accessibilityDescription: "Oneko") {
+        // cat.fill needs macOS 14; pawprint.fill covers 13.
+        if let icon = NSImage(systemSymbolName: "cat.fill", accessibilityDescription: "Oneko")
+            ?? NSImage(systemSymbolName: "pawprint.fill", accessibilityDescription: "Oneko") {
             statusItem.button?.image = icon
         } else {
             statusItem.button?.title = "🐱"
@@ -85,6 +87,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         horizontalItem = menu.addItem(withTitle: "Horizontal-Only Mode",
                                       action: #selector(toggleHorizontal), keyEquivalent: "")
         let edgeMenu = NSMenu()
+        // Auto-enablement would keep these clickable even when horizontal mode
+        // is off; refreshMenuState manages isEnabled itself.
+        edgeMenu.autoenablesItems = false
         topItem = edgeMenu.addItem(withTitle: "Dock to Top",
                                    action: #selector(setEdge(_:)), keyEquivalent: "")
         topItem.representedObject = DockEdge.top.rawValue
@@ -117,8 +122,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         SpriteVariant(rawValue: defaults.string(forKey: Keys.variant) ?? "") ?? .cat
     }
 
+    private var speed: Double {
+        defaults.object(forKey: Keys.speed) as? Double ?? 10
+    }
+
     private func applySettings() {
-        let speed = defaults.object(forKey: Keys.speed) as? Double ?? 10
         cat.speed = CGFloat(speed)
         cat.variant = spriteVariant
         cat.strategy = defaults.bool(forKey: Keys.horizontal)
@@ -134,7 +142,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         bottomItem.state = dockEdge == .bottom ? .on : .off
         topItem.isEnabled = horizontal
         bottomItem.isEnabled = horizontal
-        let speed = defaults.object(forKey: Keys.speed) as? Double ?? 10
         for item in speedItems {
             item.state = (item.representedObject as? CGFloat) == CGFloat(speed) ? .on : .off
         }

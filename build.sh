@@ -7,9 +7,15 @@ APP=build/Oneko.app
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 
-swiftc -O Sources/*.swift \
-    -o "$APP/Contents/MacOS/Oneko" \
-    -framework AppKit -framework ServiceManagement
+# Universal binary, deployment target matching LSMinimumSystemVersion.
+for arch in arm64 x86_64; do
+    swiftc -O Sources/*.swift \
+        -target "$arch-apple-macos13.0" \
+        -o "build/Oneko-$arch" \
+        -framework AppKit -framework ServiceManagement
+done
+lipo -create -output "$APP/Contents/MacOS/Oneko" build/Oneko-arm64 build/Oneko-x86_64
+rm build/Oneko-arm64 build/Oneko-x86_64
 
 cp Info.plist "$APP/Contents/Info.plist"
 cp Resources/*.png "$APP/Contents/Resources/"

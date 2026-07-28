@@ -97,7 +97,13 @@ final class SpriteSheet {
     static func sheet(for variant: SpriteVariant) -> SpriteSheet {
         if let cached = cache[variant] { return cached }
         guard let sheet = SpriteSheet(resourceName: variant.resourceName) else {
-            fatalError("\(variant.resourceName).png missing from bundle resources")
+            guard variant != .cat else {
+                fatalError("oneko.png missing from bundle resources")
+            }
+            NSLog("\(variant.resourceName).png missing or malformed; falling back to cat sheet")
+            let fallback = sheet(for: .cat)
+            cache[variant] = fallback
+            return fallback
         }
         cache[variant] = sheet
         return sheet
@@ -108,7 +114,8 @@ final class SpriteSheet {
     private init?(resourceName: String) {
         guard let url = Bundle.main.url(forResource: resourceName, withExtension: "png"),
               let image = NSImage(contentsOf: url),
-              let sheet = image.cgImage(forProposedRect: nil, context: nil, hints: nil)
+              let sheet = image.cgImage(forProposedRect: nil, context: nil, hints: nil),
+              sheet.width == sheet.height * 2  // 8x4 grid of square cells
         else { return nil }
         let cell = CGFloat(sheet.width) / 8  // supports @2x sheets too
         var result: [String: [CGImage]] = [:]
