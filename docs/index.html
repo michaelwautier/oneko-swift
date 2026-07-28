@@ -1,389 +1,824 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>oneko — the cat that chases your cursor, native on macOS</title>
-<meta name="description" content="A native Swift/AppKit port of the classic oneko: a little cat that chases your mouse cursor. 320 KB, no Electron, no permissions, 27 skins. Free and open source.">
-<link rel="icon" href="previews/oneko.png">
-<meta property="og:title" content="oneko — the cat that chases your cursor, native on macOS">
-<meta property="og:description" content="320 KB native macOS app. No Electron, no network, no permission prompts. 27 skins. Free and open source.">
-<meta property="og:image" content="https://oneko-swift.github.io/oneko-swift/social-preview.png">
-<meta property="og:url" content="https://oneko-swift.github.io/oneko-swift/">
-<meta name="twitter:card" content="summary_large_image">
-<style>
-  :root {
-    --bg: #fdfcfa;
-    --panel: #f4f1ec;
-    --border: #e4dfd7;
-    --text: #1c1b19;
-    --muted: #6f6a61;
-    --accent: #d6541e;
-    --accent-soft: #fbe9df;
-    color-scheme: light dark;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #121113;
-      --panel: #1c1a1e;
-      --border: #2d2a30;
-      --text: #efedea;
-      --muted: #9a948b;
-      --accent: #ff7a3d;
-      --accent-soft: #2c1e17;
-    }
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: ui-sans-serif, -apple-system, system-ui, "Segoe UI", sans-serif;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-  }
-  main { max-width: 60rem; margin: 0 auto; padding: 0 1.5rem 4rem; }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  .pixel { image-rendering: pixelated; }
-  code, pre, .mono { font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace; }
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>oneko — the cat that chases your cursor, native on macOS</title>
+        <meta
+            name="description"
+            content="A native Swift/AppKit port of the classic oneko: a little cat that chases your mouse cursor. 320 KB, no Electron, no permissions, 27 skins. Free and open source."
+        />
+        <link rel="icon" href="previews/oneko.png" />
+        <meta
+            property="og:title"
+            content="oneko — the cat that chases your cursor, native on macOS"
+        />
+        <meta
+            property="og:description"
+            content="320 KB native macOS app. No Electron, no network, no permission prompts. 27 skins. Free and open source."
+        />
+        <meta
+            property="og:image"
+            content="https://oneko-swift.github.io/oneko-swift/social-preview.png"
+        />
+        <meta
+            property="og:url"
+            content="https://oneko-swift.github.io/oneko-swift/"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <style>
+            :root {
+                --bg: #fdfcfa;
+                --panel: #f4f1ec;
+                --border: #e4dfd7;
+                --text: #1c1b19;
+                --muted: #6f6a61;
+                --accent: #d6541e;
+                --accent-soft: #fbe9df;
+                color-scheme: light dark;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --bg: #121113;
+                    --panel: #1c1a1e;
+                    --border: #2d2a30;
+                    --text: #efedea;
+                    --muted: #9a948b;
+                    --accent: #ff7a3d;
+                    --accent-soft: #2c1e17;
+                }
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html {
+                scroll-behavior: smooth;
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--text);
+                font-family:
+                    ui-sans-serif,
+                    -apple-system,
+                    system-ui,
+                    "Segoe UI",
+                    sans-serif;
+                line-height: 1.6;
+                -webkit-font-smoothing: antialiased;
+            }
+            main {
+                max-width: 60rem;
+                margin: 0 auto;
+                padding: 0 1.5rem 4rem;
+            }
+            a {
+                color: var(--accent);
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            .pixel {
+                image-rendering: pixelated;
+            }
+            code,
+            pre,
+            .mono {
+                font-family:
+                    ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+            }
 
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    max-width: 60rem; margin: 0 auto; padding: 1.25rem 1.5rem;
-  }
-  .brand { display: flex; align-items: center; gap: .6rem; font-weight: 600; color: var(--text); }
-  .brand img { width: 28px; height: 28px; }
-  header nav { display: flex; gap: 1.25rem; font-size: .95rem; }
-  header nav a { color: var(--muted); }
-  header nav a:hover { color: var(--accent); }
+            header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                max-width: 60rem;
+                margin: 0 auto;
+                padding: 1.25rem 1.5rem;
+            }
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
+                font-weight: 600;
+                color: var(--text);
+            }
+            .brand img {
+                width: 28px;
+                height: 28px;
+            }
+            header nav {
+                display: flex;
+                gap: 1.25rem;
+                font-size: 0.95rem;
+            }
+            header nav a {
+                color: var(--muted);
+            }
+            header nav a:hover {
+                color: var(--accent);
+            }
 
-  .hero { text-align: center; padding: 4.5rem 0 3.5rem; }
-  .hero h1 {
-    font-size: clamp(2.4rem, 6vw, 4rem);
-    line-height: 1.1; letter-spacing: -0.02em;
-    margin: 0 0 1rem; font-weight: 700;
-  }
-  .hero h1 em { font-style: normal; color: var(--accent); }
-  .hero p.tag { font-size: 1.2rem; color: var(--muted); max-width: 34em; margin: 0 auto 2.25rem; }
-  .install {
-    display: inline-flex; align-items: center; gap: .75rem;
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 12px; padding: .8rem 1rem .8rem 1.25rem;
-    font-size: 1rem; max-width: 100%;
-  }
-  .install code { overflow-x: auto; white-space: nowrap; }
-  .install code .p { color: var(--muted); user-select: none; }
-  .install button {
-    border: 1px solid var(--border); background: var(--bg); color: var(--muted);
-    border-radius: 8px; padding: .35rem .7rem; font: inherit; font-size: .85rem;
-    cursor: pointer; flex-shrink: 0;
-  }
-  .install button:hover { color: var(--accent); border-color: var(--accent); }
-  .alt { margin-top: 1.1rem; font-size: .95rem; color: var(--muted); }
-  .meta { margin-top: 2.5rem; font-size: .875rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: .4rem 1.5rem; justify-content: center; }
-  .hint {
-    margin: 0 auto; margin-top: 3rem; max-width: 26em;
-    font-size: .95rem; color: var(--muted);
-    border: 1px dashed var(--border); border-radius: 999px;
-    padding: .5rem 1.25rem; display: inline-block;
-  }
-  .hint strong { color: var(--text); font-weight: 600; }
+            .hero {
+                text-align: center;
+                padding: 4.5rem 0 3.5rem;
+            }
+            .hero h1 {
+                font-size: clamp(2.4rem, 6vw, 4rem);
+                line-height: 1.1;
+                letter-spacing: -0.02em;
+                margin: 0 0 1rem;
+                font-weight: 700;
+            }
+            .hero h1 em {
+                font-style: normal;
+                color: var(--accent);
+            }
+            .hero p.tag {
+                font-size: 1.2rem;
+                color: var(--muted);
+                max-width: 34em;
+                margin: 0 auto 2.25rem;
+            }
+            .install {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.75rem;
+                background: var(--panel);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 0.8rem 1rem 0.8rem 1.25rem;
+                font-size: 1rem;
+                max-width: 100%;
+            }
+            .install code {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            .install code .p {
+                color: var(--muted);
+                user-select: none;
+            }
+            .install button {
+                border: 1px solid var(--border);
+                background: var(--bg);
+                color: var(--muted);
+                border-radius: 8px;
+                padding: 0.35rem 0.7rem;
+                font: inherit;
+                font-size: 0.85rem;
+                cursor: pointer;
+                flex-shrink: 0;
+            }
+            .install button:hover {
+                color: var(--accent);
+                border-color: var(--accent);
+            }
+            .alt {
+                margin-top: 1.1rem;
+                font-size: 0.95rem;
+                color: var(--muted);
+            }
+            .meta {
+                margin-top: 2.5rem;
+                font-size: 0.875rem;
+                color: var(--muted);
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.4rem 1.5rem;
+                justify-content: center;
+            }
+            .hint {
+                margin: 0 auto;
+                margin-top: 3rem;
+                max-width: 26em;
+                font-size: 0.95rem;
+                color: var(--muted);
+                border: 1px dashed var(--border);
+                border-radius: 999px;
+                padding: 0.5rem 1.25rem;
+                display: inline-block;
+            }
+            .hint strong {
+                color: var(--text);
+                font-weight: 600;
+            }
 
-  section { padding: 3rem 0 0; }
-  h2 { font-size: 1.6rem; letter-spacing: -0.01em; margin: 0 0 .4rem; }
-  .lead { color: var(--muted); margin: 0 0 2rem; max-width: 46em; }
+            section {
+                padding: 3rem 0 0;
+            }
+            h2 {
+                font-size: 1.6rem;
+                letter-spacing: -0.01em;
+                margin: 0 0 0.4rem;
+            }
+            .lead {
+                color: var(--muted);
+                margin: 0 0 2rem;
+                max-width: 46em;
+            }
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
-  .card {
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 14px; padding: 1.1rem 1.25rem;
-  }
-  .card h3 { margin: 0 0 .35rem; font-size: 1rem; }
-  .card p { margin: 0; font-size: .92rem; color: var(--muted); }
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+                gap: 1rem;
+            }
+            .card {
+                background: var(--panel);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                padding: 1.1rem 1.25rem;
+            }
+            .card h3 {
+                margin: 0 0 0.35rem;
+                font-size: 1rem;
+            }
+            .card p {
+                margin: 0;
+                font-size: 0.92rem;
+                color: var(--muted);
+            }
 
-  .skin-group { margin-bottom: 1.75rem; }
-  .skin-group h3 {
-    font-size: .8rem; text-transform: uppercase; letter-spacing: .08em;
-    color: var(--muted); margin: 0 0 .75rem;
-  }
-  .skins { display: flex; flex-wrap: wrap; gap: .6rem; align-items: stretch; }
-  .skins button { justify-content: flex-start; }
-  .skins button {
-    display: flex; flex-direction: column; align-items: center; gap: .3rem;
-    background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
-    padding: .7rem .5rem .5rem; width: 5.6rem; cursor: pointer;
-    font: inherit; font-size: .72rem; color: var(--muted);
-  }
-  .skins button img { width: 48px; height: 48px; }
-  .skins button:hover { border-color: var(--accent); color: var(--text); }
-  .skins button[aria-pressed="true"] {
-    border-color: var(--accent); background: var(--accent-soft); color: var(--text);
-  }
+            .skin-group {
+                margin-bottom: 1.75rem;
+            }
+            .skin-group h3 {
+                font-size: 0.8rem;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: var(--muted);
+                margin: 0 0 0.75rem;
+            }
+            .skins {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.6rem;
+                align-items: stretch;
+            }
+            .skins button {
+                justify-content: flex-start;
+            }
+            .skins button {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 0.3rem;
+                background: var(--panel);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 0.7rem 0.5rem 0.5rem;
+                width: 5.6rem;
+                cursor: pointer;
+                font: inherit;
+                font-size: 0.72rem;
+                color: var(--muted);
+            }
+            .skins button img {
+                width: 48px;
+                height: 48px;
+            }
+            .skins button:hover {
+                border-color: var(--accent);
+                color: var(--text);
+            }
+            .skins button[aria-pressed="true"] {
+                border-color: var(--accent);
+                background: var(--accent-soft);
+                color: var(--text);
+            }
 
-  table { border-collapse: collapse; width: 100%; font-size: .95rem; }
-  th, td { text-align: left; padding: .55rem .75rem; border-bottom: 1px solid var(--border); }
-  th { color: var(--muted); font-weight: 600; font-size: .85rem; }
-  td code { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: .1rem .4rem; font-size: .85em; white-space: nowrap; }
-  .table-wrap { overflow-x: auto; }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                font-size: 0.95rem;
+            }
+            th,
+            td {
+                text-align: left;
+                padding: 0.55rem 0.75rem;
+                border-bottom: 1px solid var(--border);
+            }
+            th {
+                color: var(--muted);
+                font-weight: 600;
+                font-size: 0.85rem;
+            }
+            td code {
+                background: var(--panel);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 0.1rem 0.4rem;
+                font-size: 0.85em;
+                white-space: nowrap;
+            }
+            .table-wrap {
+                overflow-x: auto;
+            }
 
-  footer {
-    margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
-    font-size: .875rem; color: var(--muted);
-  }
-  footer p { margin: .4rem 0; }
+            footer {
+                margin-top: 4rem;
+                padding-top: 1.5rem;
+                border-top: 1px solid var(--border);
+                font-size: 0.875rem;
+                color: var(--muted);
+            }
+            footer p {
+                margin: 0.4rem 0;
+            }
 
-  #cat {
-    position: fixed; width: 32px; height: 32px; z-index: 2147483647;
-    pointer-events: none; background-image: url("skins/oneko.png");
-    image-rendering: pixelated; left: 16px; top: 16px;
-  }
-</style>
-</head>
-<body>
+            #cat {
+                position: fixed;
+                width: 32px;
+                height: 32px;
+                z-index: 2147483647;
+                pointer-events: none;
+                background-image: url("skins/oneko.png");
+                image-rendering: pixelated;
+                left: 16px;
+                top: 16px;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <a class="brand" href="#"
+                ><img
+                    class="pixel"
+                    src="previews/oneko.png"
+                    alt=""
+                    width="28"
+                    height="28"
+                />oneko</a
+            >
+            <nav>
+                <a href="#skins">Skins</a>
+                <a href="#scripting">Scripting</a>
+                <a href="https://github.com/oneko-swift/oneko-swift">GitHub</a>
+            </nav>
+        </header>
 
-<header>
-  <a class="brand" href="#"><img class="pixel" src="previews/oneko.png" alt="" width="28" height="28">oneko</a>
-  <nav>
-    <a href="#skins">Skins</a>
-    <a href="#scripting">Scripting</a>
-    <a href="https://github.com/oneko-swift/oneko-swift">GitHub</a>
-  </nav>
-</header>
+        <main>
+            <div class="hero">
+                <h1>
+                    A little cat that chases<br />your cursor.
+                    <em>Natively.</em>
+                </h1>
+                <p class="tag">
+                    The classic oneko, ported to Swift/AppKit. No Electron, no
+                    network access, no permission prompts — a 320&nbsp;KB
+                    menu-bar app that does one thing well.
+                </p>
+                <div class="install">
+                    <code
+                        ><span class="p">$ </span>brew install --cask
+                        oneko-swift/tap/oneko</code
+                    >
+                    <button id="copy" type="button">Copy</button>
+                </div>
+                <p class="alt">
+                    or
+                    <a
+                        href="https://github.com/oneko-swift/oneko-swift/releases/latest"
+                        >download the app</a
+                    >
+                    ·
+                    <a href="https://github.com/oneko-swift/oneko-swift#install"
+                        >first-launch notes</a
+                    >
+                </p>
+                <div class="meta">
+                    <span>320 KB</span><span>~12 MB RAM</span
+                    ><span>~0.1% CPU</span> <span>macOS 13+</span
+                    ><span>Apple Silicon &amp; Intel</span
+                    ><span>MIT-licensed</span>
+                </div>
+                <p>
+                    <span class="hint"
+                        >🐈 The cat on this page is real —
+                        <strong>move your mouse</strong>. On your Mac it chases
+                        the cursor across every app and screen.</span
+                    >
+                </p>
+            </div>
 
-<main>
-  <div class="hero">
-    <h1>A little cat that chases<br>your cursor. <em>Natively.</em></h1>
-    <p class="tag">The classic oneko, ported to Swift/AppKit. No Electron, no network access,
-    no permission prompts — a 320&nbsp;KB menu-bar app that does one thing well.</p>
-    <div class="install">
-      <code><span class="p">$ </span>brew install --cask oneko-swift/tap/oneko</code>
-      <button id="copy" type="button">Copy</button>
-    </div>
-    <p class="alt">or <a href="https://github.com/oneko-swift/oneko-swift/releases/latest">download the app</a>
-    · <a href="https://github.com/oneko-swift/oneko-swift#install">first-launch notes</a></p>
-    <div class="meta">
-      <span>320 KB</span><span>~12 MB RAM</span><span>~0.1% CPU</span>
-      <span>macOS 13+</span><span>Apple Silicon &amp; Intel</span><span>MIT-licensed</span>
-    </div>
-    <p><span class="hint">🐈 The cat on this page is real — <strong>move your mouse</strong>. On your Mac it chases the cursor across every app and screen.</span></p>
-  </div>
+            <section id="features">
+                <h2>Simple, like software used to be</h2>
+                <p class="lead">
+                    Everything lives in a menu-bar icon. No settings window, no
+                    onboarding, no Dock icon, no updater phoning home. Just the
+                    cat.
+                </p>
+                <div class="grid">
+                    <div class="card">
+                        <h3>Truly native</h3>
+                        <p>
+                            Pure Swift/AppKit. One 100&nbsp;ms timer drives
+                            everything; when the cat sleeps or hides, it costs
+                            exactly zero.
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h3>Above everything, in the way of nothing</h3>
+                        <p>
+                            A click-through, transparent overlay: the cat
+                            renders over every app — including full-screen apps,
+                            on all Spaces — and never intercepts a click.
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h3>A faithful port</h3>
+                        <p>
+                            The original state machine, intact: 8-direction
+                            runs, the startled alert, face-washing,
+                            wall-scratching near screen edges, and dozing off
+                            when you stop moving.
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h3>Multi-monitor done right</h3>
+                        <p>
+                            Chases across displays, handles mixed Retina setups,
+                            and can be locked to one screen — a lock that
+                            survives docking, unplugging and reboots.
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h3>Horizontal-only mode</h3>
+                        <p>
+                            Pin the cat to a row along the top or bottom edge,
+                            following only your cursor's x — like the original
+                            strip-of-desk cat.
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h3>Private by construction</h3>
+                        <p>
+                            No network access, no analytics, no accessibility
+                            permissions. Open source, and
+                            <code>./build.sh</code> rebuilds the whole app in
+                            seconds.
+                        </p>
+                    </div>
+                </div>
+            </section>
 
-  <section id="features">
-    <h2>Simple, like software used to be</h2>
-    <p class="lead">Everything lives in a menu-bar icon. No settings window, no onboarding,
-    no Dock icon, no updater phoning home. Just the cat.</p>
-    <div class="grid">
-      <div class="card">
-        <h3>Truly native</h3>
-        <p>Pure Swift/AppKit. One 100&nbsp;ms timer drives everything; when the cat sleeps or hides, it costs exactly zero.</p>
-      </div>
-      <div class="card">
-        <h3>Above everything, in the way of nothing</h3>
-        <p>A click-through, transparent overlay: the cat renders over every app — including full-screen apps, on all Spaces — and never intercepts a click.</p>
-      </div>
-      <div class="card">
-        <h3>A faithful port</h3>
-        <p>The original state machine, intact: 8-direction runs, the startled alert, face-washing, wall-scratching near screen edges, and dozing off when you stop moving.</p>
-      </div>
-      <div class="card">
-        <h3>Multi-monitor done right</h3>
-        <p>Chases across displays, handles mixed Retina setups, and can be locked to one screen — a lock that survives docking, unplugging and reboots.</p>
-      </div>
-      <div class="card">
-        <h3>Horizontal-only mode</h3>
-        <p>Pin the cat to a row along the top or bottom edge, following only your cursor's x — like the original strip-of-desk cat.</p>
-      </div>
-      <div class="card">
-        <h3>Private by construction</h3>
-        <p>No network access, no analytics, no accessibility permissions. Open source, and <code>./build.sh</code> rebuilds the whole app in seconds.</p>
-      </div>
-    </div>
-  </section>
+            <section id="skins">
+                <h2>27 skins</h2>
+                <p class="lead">
+                    The classic cat and dog, the original X11 characters, and 21
+                    sheets of community pixel art. Click one — the cat on this
+                    page will change too.
+                </p>
+                <div id="skin-groups"></div>
+            </section>
 
-  <section id="skins">
-    <h2>27 skins</h2>
-    <p class="lead">The classic cat and dog, the original X11 characters, and 21 sheets of
-    community pixel art. Click one — the cat on this page will change too.</p>
-    <div id="skin-groups"></div>
-  </section>
+            <section id="scripting">
+                <h2>Scriptable, if you want it</h2>
+                <p class="lead">
+                    Anything that can open a URL can control Oneko — Apple
+                    Shortcuts, Raycast, or <code>open</code> in a script.
+                    There's also a
+                    <a
+                        href="https://github.com/oneko-swift/oneko-swift/tree/main/raycast"
+                        >Raycast extension</a
+                    >
+                    with toggle, skin picker, speed and quit commands.
+                </p>
+                <div class="table-wrap">
+                    <table>
+                        <tr>
+                            <th>URL</th>
+                            <th>Effect</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code>oneko://show</code> / <code>hide</code> /
+                                <code>toggle</code>
+                            </td>
+                            <td>Show or hide the cat</td>
+                        </tr>
+                        <tr>
+                            <td><code>oneko://skin/sakura</code></td>
+                            <td>Switch the sprite</td>
+                        </tr>
+                        <tr>
+                            <td><code>oneko://speed/fast</code></td>
+                            <td>Set the chase speed</td>
+                        </tr>
+                        <tr>
+                            <td><code>oneko://quit</code></td>
+                            <td>Quit the app</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
 
-  <section id="scripting">
-    <h2>Scriptable, if you want it</h2>
-    <p class="lead">Anything that can open a URL can control Oneko — Apple Shortcuts,
-    Raycast, or <code>open</code> in a script. There's also a
-    <a href="https://github.com/oneko-swift/oneko-swift/tree/main/raycast">Raycast extension</a>
-    with toggle, skin picker, speed and quit commands.</p>
-    <div class="table-wrap">
-      <table>
-        <tr><th>URL</th><th>Effect</th></tr>
-        <tr><td><code>oneko://show</code> / <code>hide</code> / <code>toggle</code></td><td>Show or hide the cat</td></tr>
-        <tr><td><code>oneko://skin/sakura</code></td><td>Switch the sprite</td></tr>
-        <tr><td><code>oneko://speed/fast</code></td><td>Set the chase speed</td></tr>
-        <tr><td><code>oneko://quit</code></td><td>Quit the app</td></tr>
-      </table>
-    </div>
-  </section>
+            <footer>
+                <p>
+                    Part of a 40-year lineage: Neko on 1980s Japanese Macs → X11
+                    oneko →
+                    <a href="https://github.com/adryd325/oneko.js">oneko.js</a>
+                    on the web → your Mac's desktop. The cat chasing your cursor
+                    on this page is an adaptation of oneko.js.
+                </p>
+                <p>
+                    Code is
+                    <a
+                        href="https://github.com/oneko-swift/oneko-swift/blob/main/LICENSE"
+                        >MIT-licensed</a
+                    >; sprite art belongs to its creators — full provenance in
+                    the
+                    <a href="https://github.com/oneko-swift/oneko-swift#credits"
+                        >credits</a
+                    >.
+                </p>
+            </footer>
+        </main>
 
-  <footer>
-    <p>Part of a 40-year lineage: Neko on 1980s Japanese Macs → X11 oneko →
-    <a href="https://github.com/adryd325/oneko.js">oneko.js</a> on the web → your Mac's desktop.
-    The cat chasing your cursor on this page is an adaptation of oneko.js.</p>
-    <p>Code is <a href="https://github.com/oneko-swift/oneko-swift/blob/main/LICENSE">MIT-licensed</a>;
-    sprite art belongs to its creators — full provenance in the
-    <a href="https://github.com/oneko-swift/oneko-swift#credits">credits</a>.</p>
-  </footer>
-</main>
+        <div id="cat" class="pixel" aria-hidden="true"></div>
 
-<div id="cat" class="pixel" aria-hidden="true"></div>
+        <script>
+            (function () {
+                // ----- skin gallery -----
+                // Mirrors SpriteVariant.groups in Sources/SpriteSheet.swift.
+                // [display name, sheet file name in skins/ and previews/]
+                const groups = [
+                    [
+                        "Classic",
+                        [
+                            ["Cat", "oneko"],
+                            ["Dog", "dog"],
+                        ],
+                    ],
+                    [
+                        "X11 Originals",
+                        [
+                            ["Tora", "tora-x11"],
+                            ["Sakura", "sakura"],
+                            ["Tomoyo", "tomoyo"],
+                            ["BSD Daemon", "bsd"],
+                        ],
+                    ],
+                    [
+                        "Community",
+                        [
+                            ["Ace", "ace"],
+                            ["Black", "black"],
+                            ["Bunny", "bunny"],
+                            ["Calico", "calico"],
+                            ["Catppuccin", "catppuccin"],
+                            ["Eevee", "eevee"],
+                            ["Esmeralda", "esmeralda"],
+                            ["Fox", "fox"],
+                            ["Ghost", "ghost"],
+                            ["Gray", "gray"],
+                            ["Jess", "jess"],
+                            ["Kina", "kina"],
+                            ["Lucy", "lucy"],
+                            ["Maia", "maia"],
+                            ["Maria", "maria"],
+                            ["Mike", "mike"],
+                            ["Silver", "silver"],
+                            ["Silver Sky", "silversky"],
+                            ["Spirit", "spirit"],
+                            ["Valentine", "valentine"],
+                            ["Vaporwave", "vaporwave"],
+                        ],
+                    ],
+                ];
+                const cat = document.getElementById("cat");
+                const container = document.getElementById("skin-groups");
+                for (const [name, skins] of groups) {
+                    const group = document.createElement("div");
+                    group.className = "skin-group";
+                    const h = document.createElement("h3");
+                    h.textContent = name;
+                    group.appendChild(h);
+                    const row = document.createElement("div");
+                    row.className = "skins";
+                    for (const [title, file] of skins) {
+                        const b = document.createElement("button");
+                        b.type = "button";
+                        b.setAttribute("aria-pressed", file === "oneko");
+                        const img = document.createElement("img");
+                        img.className = "pixel";
+                        img.src = "previews/" + file + ".png";
+                        img.alt = "";
+                        img.loading = "lazy";
+                        img.width = img.height = 48;
+                        b.append(img, document.createTextNode(title));
+                        b.addEventListener("click", () => {
+                            cat.style.backgroundImage =
+                                'url("skins/' + file + '.png")';
+                            container
+                                .querySelectorAll("button")
+                                .forEach((x) =>
+                                    x.setAttribute("aria-pressed", "false"),
+                                );
+                            b.setAttribute("aria-pressed", "true");
+                        });
+                        row.appendChild(b);
+                    }
+                    group.appendChild(row);
+                    container.appendChild(group);
+                }
 
-<script>
-(function () {
-  // ----- skin gallery -----
-  // Mirrors SpriteVariant.groups in Sources/SpriteSheet.swift.
-  // [display name, sheet file name in skins/ and previews/]
-  const groups = [
-    ["Classic", [["Cat", "oneko"], ["Dog", "dog"]]],
-    ["X11 Originals", [["Tora", "tora-x11"], ["Sakura", "sakura"], ["Tomoyo", "tomoyo"], ["BSD Daemon", "bsd"]]],
-    ["Community", [
-      ["Ace", "ace"], ["Black", "black"], ["Bunny", "bunny"], ["Calico", "calico"],
-      ["Catppuccin", "catppuccin"], ["Eevee", "eevee"], ["Esmeralda", "esmeralda"],
-      ["Fox", "fox"], ["Ghost", "ghost"], ["Gray", "gray"], ["Jess", "jess"],
-      ["Kina", "kina"], ["Lucy", "lucy"], ["Maia", "maia"], ["Maria", "maria"],
-      ["Mike", "mike"], ["Silver", "silver"], ["Silver Sky", "silversky"],
-      ["Spirit", "spirit"], ["Valentine", "valentine"], ["Vaporwave", "vaporwave"],
-    ]],
-  ];
-  const cat = document.getElementById("cat");
-  const container = document.getElementById("skin-groups");
-  for (const [name, skins] of groups) {
-    const group = document.createElement("div");
-    group.className = "skin-group";
-    const h = document.createElement("h3");
-    h.textContent = name;
-    group.appendChild(h);
-    const row = document.createElement("div");
-    row.className = "skins";
-    for (const [title, file] of skins) {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.setAttribute("aria-pressed", file === "oneko");
-      const img = document.createElement("img");
-      img.className = "pixel";
-      img.src = "previews/" + file + ".png";
-      img.alt = "";
-      img.loading = "lazy";
-      img.width = img.height = 48;
-      b.append(img, document.createTextNode(title));
-      b.addEventListener("click", () => {
-        cat.style.backgroundImage = 'url("skins/' + file + '.png")';
-        container.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false"));
-        b.setAttribute("aria-pressed", "true");
-      });
-      row.appendChild(b);
-    }
-    group.appendChild(row);
-    container.appendChild(group);
-  }
+                // ----- copy button -----
+                document
+                    .getElementById("copy")
+                    .addEventListener("click", function () {
+                        navigator.clipboard
+                            .writeText(
+                                "brew install --cask oneko-swift/tap/oneko",
+                            )
+                            .then(() => {
+                                this.textContent = "Copied!";
+                                setTimeout(() => {
+                                    this.textContent = "Copy";
+                                }, 1500);
+                            });
+                    });
 
-  // ----- copy button -----
-  document.getElementById("copy").addEventListener("click", function () {
-    navigator.clipboard.writeText("brew install --cask oneko-swift/tap/oneko").then(() => {
-      this.textContent = "Copied!";
-      setTimeout(() => { this.textContent = "Copy"; }, 1500);
-    });
-  });
+                // ----- the cat (adapted from adryd325/oneko.js, MIT) -----
+                const SIZE = 32,
+                    SPEED = 10;
+                const sprites = {
+                    idle: [[3, 3]],
+                    alert: [[7, 3]],
+                    tired: [[3, 2]],
+                    sleeping: [
+                        [2, 0],
+                        [2, 1],
+                    ],
+                    scratchSelf: [
+                        [5, 0],
+                        [6, 0],
+                        [7, 0],
+                    ],
+                    scratchWallN: [
+                        [0, 0],
+                        [0, 1],
+                    ],
+                    scratchWallS: [
+                        [7, 1],
+                        [6, 2],
+                    ],
+                    scratchWallE: [
+                        [2, 2],
+                        [2, 3],
+                    ],
+                    scratchWallW: [
+                        [4, 0],
+                        [4, 1],
+                    ],
+                    N: [
+                        [1, 2],
+                        [1, 3],
+                    ],
+                    NE: [
+                        [0, 2],
+                        [0, 3],
+                    ],
+                    E: [
+                        [3, 0],
+                        [3, 1],
+                    ],
+                    SE: [
+                        [5, 1],
+                        [5, 2],
+                    ],
+                    S: [
+                        [6, 3],
+                        [7, 2],
+                    ],
+                    SW: [
+                        [5, 3],
+                        [6, 1],
+                    ],
+                    W: [
+                        [4, 2],
+                        [4, 3],
+                    ],
+                    NW: [
+                        [1, 0],
+                        [1, 1],
+                    ],
+                };
+                let catX = 48,
+                    catY = 48,
+                    mouseX = catX,
+                    mouseY = catY;
+                let frameCount = 0,
+                    idleTime = 0,
+                    idleAnimation = null,
+                    idleFrame = 0;
+                const reduceMotion = matchMedia(
+                    "(prefers-reduced-motion: reduce)",
+                ).matches;
 
-  // ----- the cat (adapted from adryd325/oneko.js, MIT) -----
-  const SIZE = 32, SPEED = 10;
-  const sprites = {
-    idle: [[3, 3]], alert: [[7, 3]], tired: [[3, 2]],
-    sleeping: [[2, 0], [2, 1]],
-    scratchSelf: [[5, 0], [6, 0], [7, 0]],
-    scratchWallN: [[0, 0], [0, 1]], scratchWallS: [[7, 1], [6, 2]],
-    scratchWallE: [[2, 2], [2, 3]], scratchWallW: [[4, 0], [4, 1]],
-    N: [[1, 2], [1, 3]], NE: [[0, 2], [0, 3]], E: [[3, 0], [3, 1]],
-    SE: [[5, 1], [5, 2]], S: [[6, 3], [7, 2]], SW: [[5, 3], [6, 1]],
-    W: [[4, 2], [4, 3]], NW: [[1, 0], [1, 1]],
-  };
-  let catX = 48, catY = 48, mouseX = catX, mouseY = catY;
-  let frameCount = 0, idleTime = 0, idleAnimation = null, idleFrame = 0;
-  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+                function setSprite(name, frame) {
+                    const [c, r] = sprites[name][frame % sprites[name].length];
+                    cat.style.backgroundPosition = `${-c * SIZE}px ${-r * SIZE}px`;
+                }
+                function place() {
+                    cat.style.left = catX - SIZE / 2 + "px";
+                    cat.style.top = catY - SIZE / 2 + "px";
+                }
+                function resetIdle() {
+                    idleAnimation = null;
+                    idleFrame = 0;
+                }
 
-  function setSprite(name, frame) {
-    const [c, r] = sprites[name][frame % sprites[name].length];
-    cat.style.backgroundPosition = `${-c * SIZE}px ${-r * SIZE}px`;
-  }
-  function place() {
-    cat.style.left = catX - SIZE / 2 + "px";
-    cat.style.top = catY - SIZE / 2 + "px";
-  }
-  function resetIdle() { idleAnimation = null; idleFrame = 0; }
+                function idle() {
+                    idleTime += 1;
+                    if (
+                        idleTime > 10 &&
+                        Math.floor(Math.random() * 200) === 0 &&
+                        idleAnimation === null
+                    ) {
+                        const options = ["sleeping", "scratchSelf"];
+                        if (catX < SIZE) options.push("scratchWallW");
+                        if (catY < SIZE) options.push("scratchWallN");
+                        if (catX > innerWidth - SIZE)
+                            options.push("scratchWallE");
+                        if (catY > innerHeight - SIZE)
+                            options.push("scratchWallS");
+                        idleAnimation =
+                            options[Math.floor(Math.random() * options.length)];
+                    }
+                    switch (idleAnimation) {
+                        case "sleeping":
+                            if (idleFrame < 8) {
+                                setSprite("tired", 0);
+                                break;
+                            }
+                            setSprite("sleeping", Math.floor(idleFrame / 4));
+                            if (idleFrame > 192) resetIdle();
+                            break;
+                        case "scratchSelf":
+                        case "scratchWallN":
+                        case "scratchWallS":
+                        case "scratchWallE":
+                        case "scratchWallW":
+                            setSprite(idleAnimation, idleFrame);
+                            if (idleFrame > 9) resetIdle();
+                            break;
+                        default:
+                            setSprite("idle", 0);
+                            return;
+                    }
+                    idleFrame += 1;
+                }
 
-  function idle() {
-    idleTime += 1;
-    if (idleTime > 10 && Math.floor(Math.random() * 200) === 0 && idleAnimation === null) {
-      const options = ["sleeping", "scratchSelf"];
-      if (catX < SIZE) options.push("scratchWallW");
-      if (catY < SIZE) options.push("scratchWallN");
-      if (catX > innerWidth - SIZE) options.push("scratchWallE");
-      if (catY > innerHeight - SIZE) options.push("scratchWallS");
-      idleAnimation = options[Math.floor(Math.random() * options.length)];
-    }
-    switch (idleAnimation) {
-      case "sleeping":
-        if (idleFrame < 8) { setSprite("tired", 0); break; }
-        setSprite("sleeping", Math.floor(idleFrame / 4));
-        if (idleFrame > 192) resetIdle();
-        break;
-      case "scratchSelf": case "scratchWallN": case "scratchWallS":
-      case "scratchWallE": case "scratchWallW":
-        setSprite(idleAnimation, idleFrame);
-        if (idleFrame > 9) resetIdle();
-        break;
-      default:
-        setSprite("idle", 0);
-        return;
-    }
-    idleFrame += 1;
-  }
+                function frame() {
+                    frameCount += 1;
+                    const diffX = catX - mouseX,
+                        diffY = catY - mouseY;
+                    const distance = Math.hypot(diffX, diffY);
+                    if (distance < SPEED || distance < 48) {
+                        idle();
+                        return;
+                    }
+                    resetIdle();
+                    if (idleTime > 1) {
+                        setSprite("alert", 0);
+                        idleTime = Math.min(idleTime, 7) - 1;
+                        return;
+                    }
+                    let dir = "";
+                    if (diffY / distance > 0.5) dir += "N";
+                    if (diffY / distance < -0.5) dir += "S";
+                    if (diffX / distance > 0.5) dir += "W";
+                    if (diffX / distance < -0.5) dir += "E";
+                    setSprite(dir, frameCount);
+                    catX = Math.min(
+                        Math.max(SIZE / 2, catX - (diffX / distance) * SPEED),
+                        innerWidth - SIZE / 2,
+                    );
+                    catY = Math.min(
+                        Math.max(SIZE / 2, catY - (diffY / distance) * SPEED),
+                        innerHeight - SIZE / 2,
+                    );
+                    place();
+                }
 
-  function frame() {
-    frameCount += 1;
-    const diffX = catX - mouseX, diffY = catY - mouseY;
-    const distance = Math.hypot(diffX, diffY);
-    if (distance < SPEED || distance < 48) { idle(); return; }
-    resetIdle();
-    if (idleTime > 1) {
-      setSprite("alert", 0);
-      idleTime = Math.min(idleTime, 7) - 1;
-      return;
-    }
-    let dir = "";
-    if (diffY / distance > 0.5) dir += "N";
-    if (diffY / distance < -0.5) dir += "S";
-    if (diffX / distance > 0.5) dir += "W";
-    if (diffX / distance < -0.5) dir += "E";
-    setSprite(dir, frameCount);
-    catX = Math.min(Math.max(SIZE / 2, catX - (diffX / distance) * SPEED), innerWidth - SIZE / 2);
-    catY = Math.min(Math.max(SIZE / 2, catY - (diffY / distance) * SPEED), innerHeight - SIZE / 2);
-    place();
-  }
-
-  place();
-  setSprite("idle", 0);
-  if (reduceMotion) return;
-  addEventListener("mousemove", e => { mouseX = e.clientX; mouseY = e.clientY; });
-  let last = 0;
-  function loop(ts) {
-    requestAnimationFrame(loop);
-    if (ts - last < 100) return;
-    last = ts;
-    frame();
-  }
-  requestAnimationFrame(loop);
-})();
-</script>
-</body>
+                place();
+                setSprite("idle", 0);
+                if (reduceMotion) return;
+                addEventListener("mousemove", (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                });
+                let last = 0;
+                function loop(ts) {
+                    requestAnimationFrame(loop);
+                    if (ts - last < 100) return;
+                    last = ts;
+                    frame();
+                }
+                requestAnimationFrame(loop);
+            })();
+        </script>
+    </body>
 </html>
