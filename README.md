@@ -6,16 +6,38 @@ dependencies.
 
 ## Install
 
+### Via Homebrew
+
 ```sh
 brew install --cask oneko-swift/tap/oneko
 ```
 
 Homebrew 6+ asks you to trust third-party taps first: `brew trust oneko-swift/tap`.
 
-The app is not notarized, so macOS blocks the first launch: allow it via
-System Settings → Privacy & Security → "Open Anyway" (on older macOS,
-right-click Oneko.app → Open). Building from source avoids the Gatekeeper
-step entirely.
+### Manually
+
+1. Download `Oneko-<version>.zip` from the
+   [latest release](https://github.com/oneko-swift/oneko-swift/releases/latest).
+2. Unzip it and drag `Oneko.app` into `/Applications`.
+3. Authorize the app on first launch (below).
+
+### First launch (both methods)
+
+The app is not notarized, so Gatekeeper blocks the first launch:
+
+1. Open `Oneko.app` once — macOS shows a warning and refuses to run it.
+2. Go to System Settings → Privacy & Security, scroll down to the notice
+   about Oneko and click **Open Anyway** (on macOS 14 and older you can
+   instead right-click `Oneko.app` → Open).
+3. Launch it again and confirm. The cat appears; this is only needed once.
+
+Terminal alternative to step 2, same effect:
+
+```sh
+xattr -dr com.apple.quarantine /Applications/Oneko.app
+```
+
+Building from source (below) avoids the Gatekeeper step entirely.
 
 ## Build & run
 
