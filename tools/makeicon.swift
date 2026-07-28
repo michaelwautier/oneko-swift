@@ -1,9 +1,9 @@
 import AppKit
 
 // Builds the app .iconset: the pixel-art glyph, centered by its opaque
-// bounding box, integer nearest-neighbor upscaled onto a white rounded-rect
-// tile (Apple's 824/1024 icon grid), rendered as a 1024 master and
-// downscaled to every iconset size.
+// bounding box, integer nearest-neighbor upscaled onto a Catppuccin Mocha
+// rounded-rect tile (Apple's 824/1024 icon grid), rendered as a 1024 master
+// and downscaled to every iconset size.
 //   swift tools/makeicon.swift Resources/icons/oneko-icon.png <out.iconset>
 // Then: iconutil -c icns <out.iconset> -o Resources/icons/Oneko.icns
 
@@ -32,11 +32,12 @@ for y in 0..<src.height {
     }
 }
 
-// 1024 master: white tile on Apple's grid, glyph at an integer scale.
+// 1024 master: Catppuccin Mocha base (#1e1e2e) tile on Apple's grid,
+// glyph at an integer scale.
 let master = makeContext(1024)
 let tile = CGRect(x: 100, y: 100, width: 824, height: 824)
 master.addPath(CGPath(roundedRect: tile, cornerWidth: 186, cornerHeight: 186, transform: nil))
-master.setFillColor(CGColor(red: 1, green: 1, blue: 1, alpha: 1))
+master.setFillColor(CGColor(red: 30 / 255, green: 30 / 255, blue: 46 / 255, alpha: 1))
 master.fillPath()
 
 let scale = 640 / max(maxX - minX + 1, maxY - minY + 1)  // glyph ~620 px wide
