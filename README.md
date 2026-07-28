@@ -31,8 +31,44 @@ Requires Xcode command line tools. No other dependencies.
 - Menu bar item (cat icon): Show/Hide Cat, Speed (Slow/Normal/Fast), Sprite
   (grouped submenu — each entry shows the sprite's idle frame as its icon),
   Horizontal-Only Mode + Dock to Top/Bottom, Launch at Login, Quit.
-- Lightweight: one 100 ms timer polling `NSEvent.mouseLocation` (no
-  accessibility permission needed), ~0.1% CPU.
+- **Lightweight**: ~0.1% CPU idle, ~1.5% mid-chase, ~12 MB, exactly zero when
+  hidden — see [Performance](#performance).
+
+## Performance
+
+Measured with `top` on an Apple Silicon Mac:
+
+| State | CPU | Memory | Power score |
+|---|---|---|---|
+| Cat visible, idle or sleeping | ~0.1% | ~12 MB | ~0.4 |
+| Cat chasing a moving cursor | ~1.5% | ~12 MB | ~1.5 |
+| Cat hidden | 0.0% | ~12 MB | 0.0 |
+
+Why it stays that cheap:
+
+- **One timer, nothing else.** A single 100 ms `Timer` (20 ms tolerance, so
+  wakeups coalesce with other system activity) drives the mouse poll, the state
+  machine and the sprite swap. No display link, no event tap, no accessibility
+  API — `NSEvent.mouseLocation` is a cheap read that needs no permissions.
+- **No drawing code runs per frame.** The cat is one 32×32 `CALayer`; a frame
+  change is a layer-contents swap to an already-decoded `CGImage`, and movement
+  is a window-origin change. Scaling (nearest-neighbor, for crisp pixels) is
+  done by the compositor.
+- **Identical frames are never recommitted.** An idle or sleeping cat sends
+  zero updates to WindowServer, even though the timer still polls the mouse
+  10× per second.
+- **Only the sprite sheet in use is resident** (~130 KB decoded). The 29 menu
+  icons are standalone 32×32 copies, not crops retaining their full sheets.
+- **Hide Cat means zero.** Hiding stops the timer, orders the window out and
+  ends the app's activity assertion, so macOS puts the process in App Nap. No
+  sleep assertions are ever held (`pmset -g assertions` stays clean).
+- **320 KB universal binary, 768 KB bundle**, no frameworks beyond AppKit.
+
+Check it yourself while the app runs:
+
+```sh
+top -l 3 -pid $(pgrep -x Oneko) -stats cpu,power,mem
+```
 
 ## Layout
 
@@ -51,7 +87,7 @@ Requires Xcode command line tools. No other dependencies.
 - `tools/makepreviews.swift` — regenerates the animated README previews in
   `docs/previews/` from `Resources/`
 
-Settings persist in `defaults` domain `com.michael.oneko`.
+Settings persist in `defaults` domain `app.oneko.Oneko`.
 
 ## Sprite gallery
 

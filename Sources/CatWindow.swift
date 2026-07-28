@@ -4,6 +4,7 @@ import AppKit
 /// Click-through, above full-screen apps and the menu bar, on every Space.
 final class CatWindow: NSWindow {
     private let spriteLayer = CALayer()
+    private var lastImage: CGImage?
 
     init() {
         let size = SpriteSheet.frameSize
@@ -27,6 +28,10 @@ final class CatWindow: NSWindow {
     }
 
     func show(_ image: CGImage?) {
+        // Frames are cached per sheet, so identity is stable: skip the commit
+        // when the sprite hasn't changed (idle/sleeping cat, 10x/sec).
+        guard image !== lastImage else { return }
+        lastImage = image
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         spriteLayer.contents = image

@@ -4,7 +4,6 @@ import ServiceManagement
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let cat = CatController()
     private var statusItem: NSStatusItem!
-    private var activity: NSObjectProtocol?
 
     private let defaults = UserDefaults.standard
     private enum Keys {
@@ -30,11 +29,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
-        // Keep the animation timer steady even though we're a background app.
-        activity = ProcessInfo.processInfo.beginActivity(
-            options: .userInitiatedAllowingIdleSystemSleep,
-            reason: "Cat animation")
-
         setUpStatusItem()
         applySettings()
         if !defaults.bool(forKey: Keys.hidden) {
@@ -75,10 +69,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 let item = groupMenu.addItem(withTitle: variant.title,
                                              action: #selector(setVariant(_:)), keyEquivalent: "")
                 item.representedObject = variant.rawValue
-                if let idle = SpriteSheet.sheet(for: variant).frame("idle", 0) {
-                    // 32px frame at 16pt: 1:1 pixels on Retina, downsampled on 1x.
-                    item.image = NSImage(cgImage: idle, size: NSSize(width: 16, height: 16))
-                }
+                item.image = SpriteSheet.menuIcon(for: variant)
                 variantItems.append(item)
             }
             let groupItem = variantMenu.addItem(withTitle: groupName, action: nil, keyEquivalent: "")
