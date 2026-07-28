@@ -45,7 +45,7 @@ Default choice for this plan: **option 2** to start (zero cost, one-line caveat)
 
 ## Phase 3 — Tap + cask
 
-- [ ] Create repo `oneko-swift/homebrew-tap` with `Casks/oneko.rb`:
+- [x] Create repo `oneko-swift/homebrew-tap` with `Casks/oneko.rb`:
 
 ```ruby
 cask "oneko" do
@@ -80,6 +80,12 @@ end
 
 - [ ] GitHub Actions workflow on tag push: build universal zip, create release, compute sha256.
 - [ ] Second job (or `brew bump-cask-pr`-style script) that opens a PR against `homebrew-tap` bumping `version` + `sha256`.
+
+Workflow added in `.github/workflows/release.yml` (both jobs). Tick after the
+first tag-push run succeeds end to end. Setup required first: a fine-grained
+PAT (org `oneko-swift`, repo `homebrew-tap`, Contents + Pull requests
+read/write) stored as the `TAP_GITHUB_TOKEN` secret in `oneko-swift/oneko-swift`.
+Tap-bump commits are authored by `github-actions[bot]` to keep the pseudonym.
 
 ## Acceptance criteria
 

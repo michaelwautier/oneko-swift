@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+    outputs:
+      version: ${{ steps.build.outputs.version }}
+      sha256: ${{ steps.build.outputs.sha256 }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build universal zip
+        id: build
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          ./release.sh "$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "sha256=$(shasum -a 256 "build/Oneko-$VERSION.zip" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "build/Oneko-${{ steps.build.outputs.version }}.zip" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes
+
+  bump-cask:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tap
+        uses: actions/checkout@v4
+        with:
+          repository: oneko-swift/homebrew-tap
+          token: ${{ secrets.TAP_GITHUB_TOKEN }}
+
+      - name: Bump version and sha256, open PR
+        env:
+          GH_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
+          VERSION: ${{ needs.release.outputs.version }}
+          SHA256: ${{ needs.release.outputs.sha256 }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BRANCH="bump-oneko-$VERSION"
+          git checkout -b "$BRANCH"
+          sed -i -E "s|^  version \".*\"|  version \"$VERSION\"|" Casks/oneko.rb
+          sed -i -E "s|^  sha256 \".*\"|  sha256 \"$SHA256\"|" Casks/oneko.rb
+          git diff --exit-code Casks/oneko.rb && { echo "cask already at $VERSION"; exit 1; }
+          git commit -am "oneko $VERSION"
+          git push origin "$BRANCH"
+          gh pr create --repo oneko-swift/homebrew-tap \
+            --head "$BRANCH" \
+            --title "oneko $VERSION" \
+            --body "Automated bump to v$VERSION (sha256 \`$SHA256\`)."
