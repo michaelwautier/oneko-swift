@@ -32,6 +32,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         ("Slow", 5), ("Normal", 10), ("Fast", 20),
     ]
 
+    /// URLs can arrive before applicationDidFinishLaunching when the app is
+    /// launched by an open request; the menu isn't built yet, so hold them.
+    private var pendingURLs: [URL] = []
+    private var finishedLaunching = false
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
         reconcileLockedDisplay()
@@ -44,6 +49,50 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             cat.start()
         }
         refreshMenuState()
+        finishedLaunching = true
+        pendingURLs.forEach(handle)
+        pendingURLs.removeAll()
+    }
+
+    // MARK: - URL scheme (oneko://)
+
+    func application(_ application: NSApplication, open urls: [URL]) {
+        guard finishedLaunching else {
+            pendingURLs.append(contentsOf: urls)
+            return
+        }
+        urls.forEach(handle)
+    }
+
+    /// oneko://show | hide | toggle | quit
+    /// oneko://skin/<variant>       (SpriteVariant rawValue, e.g. sakura)
+    /// oneko://speed/<slow|normal|fast>
+    private func handle(_ url: URL) {
+        let argument = url.pathComponents.dropFirst().first
+        switch url.host {
+        case "show": setShown(true)
+        case "hide": setShown(false)
+        case "toggle": setShown(!cat.isRunning)
+        case "quit": NSApp.terminate(nil)
+        case "skin":
+            guard let variant = argument.flatMap(SpriteVariant.init(rawValue:)) else {
+                return NSLog("Unknown skin in URL: \(url)")
+            }
+            defaults.set(variant.rawValue, forKey: Keys.variant)
+            applySettings()
+            refreshMenuState()
+        case "speed":
+            guard let value = Self.speeds.first(where: {
+                $0.0.lowercased() == argument?.lowercased()
+            })?.1 else {
+                return NSLog("Unknown speed in URL: \(url)")
+            }
+            defaults.set(Double(value), forKey: Keys.speed)
+            applySettings()
+            refreshMenuState()
+        default:
+            NSLog("Unknown URL command: \(url)")
+        }
     }
 
     private func setUpStatusItem() {
@@ -264,8 +313,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Actions
 
     @objc private func toggleShown() {
-        if cat.isRunning { cat.stop() } else { cat.start() }
-        defaults.set(!cat.isRunning, forKey: Keys.hidden)
+        setShown(!cat.isRunning)
+    }
+
+    private func setShown(_ shown: Bool) {
+        if shown != cat.isRunning {
+            shown ? cat.start() : cat.stop()
+        }
+        defaults.set(!shown, forKey: Keys.hidden)
         refreshMenuState()
     }
 
