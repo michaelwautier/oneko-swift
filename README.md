@@ -4,6 +4,8 @@ A native Swift/AppKit port of the classic [oneko](https://github.com/adryd325/on
 a little cat that chases your mouse cursor around the screen. No Electron, no
 dependencies.
 
+![oneko chasing the cursor](docs/previews/oneko-live-preview.gif)
+
 ## Install
 
 ### Via Homebrew
