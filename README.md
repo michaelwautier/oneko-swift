@@ -4,6 +4,13 @@ A native Swift/AppKit port of the classic [oneko](https://github.com/adryd325/on
 a little cat that chases your mouse cursor around the screen. No Electron, no
 dependencies.
 
+[![Latest release](https://img.shields.io/github/v/release/oneko-swift/oneko-swift)](https://github.com/oneko-swift/oneko-swift/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Platform: macOS 13+](https://img.shields.io/badge/platform-macOS%2013%2B-black)
+
+Requires macOS 13 (Ventura) or later. Universal binary — Apple Silicon and
+Intel.
+
 ![oneko chasing the cursor](docs/previews/oneko-live-preview.gif)
 
 ## Install
@@ -25,7 +32,10 @@ Homebrew 6+ asks you to trust third-party taps first: `brew trust oneko-swift/ta
 
 ### First launch (both methods)
 
-The app is not notarized, so Gatekeeper blocks the first launch:
+The app is not notarized (that requires a paid Apple Developer account; this
+is a free open-source project), so Gatekeeper blocks the first launch. The
+entire source is in this repo and `./build.sh` produces the same app in
+seconds if you'd rather not trust a downloaded binary. To authorize it:
 
 1. Open `Oneko.app` once — macOS shows a warning and refuses to run it.
 2. Go to System Settings → Privacy & Security, scroll down to the notice
@@ -157,6 +167,12 @@ Settings persist in `defaults` domain `app.oneko.Oneko`.
 | ![spirit](docs/previews/spirit.png) | ![valentine](docs/previews/valentine.png) | ![vaporwave](docs/previews/vaporwave.png) |
 | :---------------------------------: | :---------------------------------------: | :---------------------------------------: |
 |               Spirit                |                 Valentine                 |                 Vaporwave                 |
+
+## License
+
+All code is [MIT-licensed](LICENSE). The sprite art in `Resources/` is **not**
+covered by the MIT license — it belongs to its original creators, listed under
+[Credits](#credits).
 
 ## Credits
 
