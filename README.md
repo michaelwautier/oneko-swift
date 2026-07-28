@@ -25,8 +25,8 @@ Requires Xcode command line tools. No other dependencies.
   cursor's x. It follows the cursor's *screen* on multi-monitor setups (running
   to the new screen's edge row when the cursor changes displays) — same as in
   normal mode, where it simply chases the cursor across displays.
-- **29 sprite variants**, grouped in the menu bar as Classic (cat, dog), X11
-  Originals (tora, sakura, tomoyo, the BSD daemon) and Community (23 sheets of
+- **27 sprite variants**, grouped in the menu bar as Classic (cat, dog), X11
+  Originals (tora, sakura, tomoyo, the BSD daemon) and Community (21 sheets of
   community pixel art). See the [gallery](#sprite-gallery) below.
 - Menu bar item (cat icon): Show/Hide Cat, Speed (Slow/Normal/Fast), Sprite
   (grouped submenu — each entry shows the sprite's idle frame as its icon),
@@ -57,7 +57,7 @@ Why it stays that cheap:
 - **Identical frames are never recommitted.** An idle or sleeping cat sends
   zero updates to WindowServer, even though the timer still polls the mouse
   10× per second.
-- **Only the sprite sheet in use is resident** (~130 KB decoded). The 29 menu
+- **Only the sprite sheet in use is resident** (~130 KB decoded). The 27 menu
   icons are standalone 32×32 copies, not crops retaining their full sheets.
 - **Hide Cat means zero.** Hiding stops the timer, orders the window out and
   ends the app's activity assertion, so macOS puts the process in App Nap. No
@@ -81,7 +81,7 @@ top -l 3 -pid $(pgrep -x Oneko) -stats cpu,power,mem
   sprite variant catalog (with menu grouping) lives here
 - `Sources/AppDelegate.swift` — menu bar UI, settings (UserDefaults),
   launch-at-login via `SMAppService`
-- `Resources/*.png` — the 29 sprite sheets, all in the oneko.js 256×128 layout
+- `Resources/*.png` — the 27 sprite sheets, all in the oneko.js 256×128 layout
 - `tools/makesheet.swift` — builds a sheet from the original X11 oneko XBM
   bitmaps + transparency masks, for any animal in the oneko sources
 - `tools/makepreviews.swift` — regenerates the animated README previews in
@@ -117,9 +117,9 @@ Settings persist in `defaults` domain `app.oneko.Oneko`.
 |:---:|:---:|:---:|:---:|:---:|:---:|
 | Lucy | Maia | Maria | Mike | Silver | Silver Sky |
 
-| ![snuupy](docs/previews/snuupy.png) | ![spirit](docs/previews/spirit.png) | ![tora](docs/previews/tora.png) | ![valentine](docs/previews/valentine.png) | ![vaporwave](docs/previews/vaporwave.png) | |
+| ![spirit](docs/previews/spirit.png) | ![valentine](docs/previews/valentine.png) | ![vaporwave](docs/previews/vaporwave.png) | | | |
 |:---:|:---:|:---:|:---:|:---:|:---:|
-| Snuupy | Spirit | Tora (Color) | Valentine | Vaporwave | |
+| Spirit | Valentine | Vaporwave | | | |
 
 ## Credits
 
@@ -142,8 +142,8 @@ All sprite art belongs to its original creators.
   (MIT), the oneko cat in [Catppuccin](https://github.com/catppuccin/catppuccin)
   colours.
 - **All other Community sheets** (Ace, Black, Bunny, Calico, Eevee, Esmeralda,
-  Fox, Ghost, Gray, Jess, Kina, Lucy, Maria, Mike, Silver, Silver Sky, Snuupy,
-  Spirit, Tora (Color), Valentine) — from the community-maintained Oneko Source
+  Fox, Ghost, Gray, Jess, Kina, Lucy, Maria, Mike, Silver, Silver Sky,
+  Spirit, Valentine) — from the community-maintained Oneko Source
   Database, [tallypaws/oneko_db](https://github.com/tallypaws/oneko_db)
   (linked as the sprite source by
   [lots-o-nekos](https://github.com/raynepaws/lots-o-nekos)). The Fox sheet was
