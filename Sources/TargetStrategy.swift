@@ -32,6 +32,36 @@ enum DockEdge: String {
     case top, bottom
 }
 
+extension NSScreen {
+    var displayID: CGDirectDisplayID? {
+        (deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)?.uint32Value
+    }
+}
+
+/// Locks the cat to a single display by clamping the cursor into that
+/// display's frame before the base strategy sees it: when the cursor is on
+/// another screen the cat waits at the nearest edge instead of following.
+/// Falls back to the base behavior while the display is disconnected.
+struct DisplayLockedStrategy: TargetStrategy {
+    let base: TargetStrategy
+    let displayID: CGDirectDisplayID
+
+    func target(forMouse mouse: CGPoint) -> CGPoint {
+        guard let frame = NSScreen.screens.first(where: { $0.displayID == displayID })?.frame
+        else { return base.target(forMouse: mouse) }
+        // NSMouseInRect (unflipped) counts [minX, maxX) × (minY, maxY] as
+        // inside; clamp just within those bounds so screenContaining can't
+        // resolve to a neighboring screen.
+        let clamped = CGPoint(x: min(max(mouse.x, frame.minX), frame.maxX.nextDown),
+                              y: min(max(mouse.y, frame.minY.nextUp), frame.maxY))
+        return base.target(forMouse: clamped)
+    }
+
+    func isSettled(dx: CGFloat, dy: CGFloat, threshold: CGFloat) -> Bool {
+        base.isSettled(dx: dx, dy: dy, threshold: threshold)
+    }
+}
+
 /// Horizontal-only mode: the cat ignores the cursor's y entirely and stays
 /// pinned to a row along the top or bottom edge. The row belongs to whichever
 /// screen currently contains the cursor, so the cat follows the cursor across
